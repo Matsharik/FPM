@@ -1,0 +1,83 @@
+.head {
+  display: flex;
+  align-items: center;
+  gap: var(--s-4);
+  margin-bottom: var(--s-6);
+}
+.section {
+  padding: var(--s-5) 0;
+  border-top: 1px solid var(--border);
+}
+.section h2 {
+  margin-bottom: 4px;
+}
+.note {
+  color: var(--text-muted);
+  font-size: var(--fs-14);
+}
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-3);
+  margin-top: var(--s-3);
+}
+.swatch {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 120px;
+  font-size: var(--fs-12);
+}
+.chip {
+  height: 56px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+}
+.typeStack {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.box {
+  width: 320px;
+  padding: var(--s-4);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-card);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.tiles {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--s-3);
+  width: 100%;
+}
+.nodes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 32px;
+  align-items: flex-start;
+}
+.nodeBox {
+  position: relative;
+  padding-top: 14px;
+}
+.nodeBox :global(.react-flow__handle) {
+  display: none;
+}
+.inspectorDemo {
+  width: 440px;
+  height: 220px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-card);
+  overflow: hidden;
+}
+.states {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--s-3);
+  width: 100%;
+}

@@ -1,0 +1,35 @@
+{
+  "login": "head_prod",
+  "name": "Зам. по производству",
+  "role": "admin",
+  "scope_roots": [
+    {
+      "id": 9,
+      "name": "Производство"
+    }
+  ],
+  "node": null,
+  "permissions": [
+    "demo.control",
+    "deviations.done",
+    "deviations.manage",
+    "deviations.recheck",
+    "flags.write",
+    "people.read",
+    "points.write"
+  ],
+  "sees_everything": false,
+  "zone": [
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19
+  ]
+}

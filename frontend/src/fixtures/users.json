@@ -1,0 +1,65 @@
+[
+  {
+    "login": "director",
+    "name": "Генеральный директор",
+    "role": "admin",
+    "scope_roots": [
+      {
+        "id": 1,
+        "name": "Фотопринт"
+      }
+    ],
+    "node": null
+  },
+  {
+    "login": "head_client",
+    "name": "Зам. по работе с клиентами",
+    "role": "admin",
+    "scope_roots": [
+      {
+        "id": 2,
+        "name": "Работа с клиентами"
+      }
+    ],
+    "node": null
+  },
+  {
+    "login": "head_prod",
+    "name": "Зам. по производству",
+    "role": "admin",
+    "scope_roots": [
+      {
+        "id": 9,
+        "name": "Производство"
+      }
+    ],
+    "node": null
+  },
+  {
+    "login": "qc_otk",
+    "name": "Контролёр ОТК",
+    "role": "qc",
+    "scope_roots": [
+      {
+        "id": 12,
+        "name": "ОТК"
+      }
+    ],
+    "node": {
+      "id": 17,
+      "name": "Контролёр ОТК Иванова"
+    }
+  },
+  {
+    "login": "builder",
+    "name": "Методолог",
+    "role": "builder",
+    "scope_roots": [
+      {
+        "id": 1,
+        "name": "Фотопринт"
+      }
+    ],
+    "node": null
+  }
+]

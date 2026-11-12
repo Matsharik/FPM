@@ -1,0 +1,98 @@
+{
+  "node_id": 11,
+  "name": "defect_rate",
+  "metric": "defect_rate",
+  "title": "Доля брака",
+  "compute": "measured",
+  "pinned": true,
+  "units": "natural",
+  "unit": "%",
+  "value": 6.4,
+  "value_date": "2026-11-22",
+  "status": "red",
+  "severity": 1,
+  "level": "crit",
+  "status_source": "thresholds",
+  "profile": "default",
+  "thresholds": {
+    "target": 2,
+    "warn": 3.5,
+    "crit": 5
+  },
+  "direction": "lower_better",
+  "priority": "quality",
+  "tile": "quality",
+  "stage": 5,
+  "source": "erp",
+  "tags": {},
+  "days": 365,
+  "stale": false,
+  "agg": "day",
+  "points": [
+    {
+      "ts": "2026-11-08T21:00:00Z",
+      "value": 1.77
+    },
+    {
+      "ts": "2026-11-09T21:00:00Z",
+      "value": 1.63
+    },
+    {
+      "ts": "2026-11-10T21:00:00Z",
+      "value": 1.81
+    },
+    {
+      "ts": "2026-11-11T21:00:00Z",
+      "value": 1.68
+    },
+    {
+      "ts": "2026-11-12T21:00:00Z",
+      "value": 2.44
+    },
+    {
+      "ts": "2026-11-13T21:00:00Z",
+      "value": 2.88
+    },
+    {
+      "ts": "2026-11-14T21:00:00Z",
+      "value": 3.32
+    },
+    {
+      "ts": "2026-11-15T21:00:00Z",
+      "value": 3.76
+    },
+    {
+      "ts": "2026-11-16T21:00:00Z",
+      "value": 4.2
+    },
+    {
+      "ts": "2026-11-17T21:00:00Z",
+      "value": 4.64
+    },
+    {
+      "ts": "2026-11-18T21:00:00Z",
+      "value": 5.08
+    },
+    {
+      "ts": "2026-11-19T21:00:00Z",
+      "value": 5.52
+    },
+    {
+      "ts": "2026-11-20T21:00:00Z",
+      "value": 5.96
+    },
+    {
+      "ts": "2026-11-21T21:00:00Z",
+      "value": 6.4
+    }
+  ],
+  "flags": [
+    {
+      "ts": "2026-11-10T21:00:00Z",
+      "kind": "annotation",
+      "values": [],
+      "label": "Запуск новой обложки",
+      "ref": "E-000974"
+    }
+  ]
+}

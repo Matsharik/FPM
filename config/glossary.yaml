@@ -1,0 +1,670 @@
+# Единый словарь метрик «Фотопринт».
+#
+# Названия метрик взяты из ТЗ и слов заказчика. Все цели и пороги — синтетические
+# (synthetic: true): они нужны для демо и подбираются заказчиком при внедрении.
+# Денежных единиц здесь нет и быть не может, пока settings.allow_money = false (Р7).
+#
+# direction:    lower_better | higher_better
+# priority:     time | quality | cost | other        (срок → качество → себестоимость)
+# aggregation:  mean | sum | last                     (как точки за сутки сводятся в одно значение)
+# display.relative: pct_of_target | index | share | as_is
+# thresholds:   default — обычный профиль; season — в месяцы из settings.season_months
+
+# --- Поддержка (по словарю Mary) --------------------------------------------
+
+tickets_inbound:
+  title: Входящих обращений за сутки
+  definition: Число обращений клиентов во всех каналах за сутки
+  formula: count(tickets created)
+  source: support
+  owner: Зам. по работе с клиентами
+  unit: шт
+  display: {relative: pct_of_target, natural: шт}
+  direction: lower_better
+  priority: other
+  tile: support
+  stage: 7
+  aggregation: sum
+  thresholds:
+    default: {target: 1200, warn: 1600, crit: 2000}
+    season: {target: 2000, warn: 2600, crit: 3200}
+  synthetic: true
+
+tickets_unanswered:
+  title: Обращений без ответа сейчас
+  definition: Число открытых обращений, на которые ещё не дан первый ответ
+  formula: count(tickets without first reply)
+  source: support
+  owner: Зам. по работе с клиентами
+  unit: шт
+  display: {relative: pct_of_target, natural: шт}
+  direction: lower_better
+  priority: time
+  tile: support
+  stage: 7
+  aggregation: last
+  thresholds:
+    default: {target: 10, warn: 30, crit: 60}
+    season: {target: 20, warn: 50, crit: 90}
+  synthetic: true
+
+reply_1min_share:
+  title: Доля ответов за 1 минуту
+  definition: Доля обращений, первый ответ на которые дан в течение минуты
+  formula: replied_within_1min / tickets
+  source: support
+  owner: Зам. по работе с клиентами
+  unit: "%"
+  display: {relative: pct_of_target, natural: "%"}
+  direction: higher_better
+  priority: time
+  tile: support
+  stage: 7
+  aggregation: mean
+  thresholds:
+    default: {target: 80, warn: 70, crit: 60}
+    season: {target: 70, warn: 60, crit: 50}
+  synthetic: true
+
+sla_topics_share:
+  title: SLA по темам
+  definition: Доля обращений, закрытых в срок, установленный для их темы
+  formula: closed_within_topic_sla / closed
+  source: support
+  owner: Зам. по работе с клиентами
+  unit: "%"
+  display: {relative: pct_of_target, natural: "%"}
+  direction: higher_better
+  priority: time
+  tile: support
+  stage: 7
+  aggregation: mean
+  thresholds:
+    default: {target: 90, warn: 85, crit: 80}
+    season: {target: 85, warn: 80, crit: 72}
+  synthetic: true
+
+defect_tickets_share:
+  title: Доля обращений по браку
+  definition: Доля обращений с темой «брак / рекламация» среди всех обращений за сутки
+  formula: defect_tickets / tickets
+  source: support
+  owner: Зам. по работе с клиентами
+  unit: "%"
+  display: {relative: pct_of_target, natural: "%"}
+  direction: lower_better
+  priority: quality
+  tile: quality
+  stage: 7
+  aggregation: mean
+  thresholds:
+    default: {target: 4.0, warn: 6.0, crit: 8.0}
+  synthetic: true
+
+mary_closed_share:
+  title: Доля закрытого Mary
+  definition: Доля обращений, закрытых системой Mary без участия менеджера
+  formula: closed_by_mary / closed
+  source: support
+  owner: Зам. по работе с клиентами
+  unit: "%"
+  display: {relative: pct_of_target, natural: "%"}
+  direction: higher_better
+  priority: cost
+  tile: support
+  stage: 7
+  aggregation: mean
+  thresholds:
+    default: {target: 67, warn: 60, crit: 50}
+  synthetic: true
+
+wismo_share:
+  title: Доля обращений «где мой заказ»
+  definition: Доля обращений о статусе и сроке заказа; в сезон преобладает
+  formula: wismo_tickets / tickets
+  source: support
+  owner: Зам. по работе с клиентами
+  unit: "%"
+  display: {relative: pct_of_target, natural: "%"}
+  direction: lower_better
+  priority: time
+  tile: support
+  stage: 7
+  aggregation: mean
+  thresholds:
+    default: {target: 25, warn: 35, crit: 45}
+    season: {target: 40, warn: 50, crit: 60}
+  synthetic: true
+
+# --- Модерация ---------------------------------------------------------------
+
+moderation_queue_time:
+  title: Время в очереди модерации
+  definition: Среднее время от поступления макета до решения модератора
+  formula: avg(moderated_at - submitted_at)
+  source: erp
+  owner: Зам. по работе с клиентами
+  unit: ч
+  display: {relative: pct_of_target, natural: ч}
+  direction: lower_better
+  priority: time
+  tile: moderation
+  stage: 4
+  aggregation: mean
+  thresholds:
+    default: {target: 2, warn: 4, crit: 8}
+    season: {target: 4, warn: 8, crit: 12}
+  synthetic: true
+
+layout_reject_share:
+  title: Доля отклонённых макетов
+  definition: Доля макетов, возвращённых клиенту на доработку
+  formula: rejected_layouts / moderated_layouts
+  source: erp
+  owner: Зам. по работе с клиентами
+  unit: "%"
+  display: {relative: pct_of_target, natural: "%"}
+  direction: lower_better
+  priority: quality
+  tile: moderation
+  stage: 4
+  aggregation: mean
+  thresholds:
+    default: {target: 8, warn: 12, crit: 18}
+  synthetic: true
+
+# --- Производство ------------------------------------------------------------
+
+site_load:
+  title: Загрузка участка
+  definition: Отношение объёма в работе к мощности участка за сутки
+  formula: items_in_work / capacity
+  source: erp
+  owner: Зам. по производству
+  unit: "%"
+  display: {relative: pct_of_target, natural: "%"}
+  direction: lower_better
+  priority: cost
+  tile: production
+  stage: 5
+  aggregation: mean
+  thresholds:
+    default: {target: 85, warn: 95, crit: 105}
+    season: {target: 95, warn: 105, crit: 115}
+  synthetic: true
+
+wip_orders:
+  title: Заказов в работе (WIP)
+  definition: Число заказов, принятых в производство и ещё не отгруженных
+  formula: count(orders in production)
+  source: erp
+  owner: Зам. по производству
+  unit: шт
+  display: {relative: pct_of_target, natural: шт}
+  direction: lower_better
+  priority: time
+  tile: production
+  stage: 5
+  aggregation: last
+  thresholds:
+    default: {target: 3000, warn: 4500, crit: 6000}
+    season: {target: 6000, warn: 8000, crit: 10000}
+  synthetic: true
+
+production_time:
+  title: Срок производства
+  definition: Среднее время от запуска заказа в производство до готовности; цель — один день, публичное обещание — до 3 дней
+  formula: avg(ready_at - started_at)
+  source: erp
+  owner: Зам. по производству
+  unit: ч
+  display: {relative: pct_of_target, natural: ч}
+  direction: lower_better
+  priority: time
+  tile: production
+  stage: 5
+  aggregation: mean
+  thresholds:
+    default: {target: 24, warn: 48, crit: 72}
+  synthetic: true
+
+on_time_24h_share:
+  title: Доля заказов в срок 24 ч
+  definition: Доля заказов, изготовленных за одни сутки (целевой срок)
+  formula: ready_within_24h / ready
+  source: erp
+  owner: Зам. по производству
+  unit: "%"
+  display: {relative: pct_of_target, natural: "%"}
+  direction: higher_better
+  priority: time
+  tile: production
+  stage: 5
+  aggregation: mean
+  thresholds:
+    default: {target: 80, warn: 70, crit: 60}
+    season: {target: 70, warn: 60, crit: 50}
+  synthetic: true
+
+on_time_72h_share:
+  title: Доля заказов в срок 72 ч
+  definition: Доля заказов, изготовленных за трое суток (публичный срок)
+  formula: ready_within_72h / ready
+  source: erp
+  owner: Зам. по производству
+  unit: "%"
+  display: {relative: pct_of_target, natural: "%"}
+  direction: higher_better
+  priority: time
+  tile: production
+  stage: 5
+  aggregation: mean
+  thresholds:
+    default: {target: 97, warn: 93, crit: 90}
+    season: {target: 95, warn: 90, crit: 85}
+  synthetic: true
+
+pay_to_carrier_time:
+  title: Оплата → передача в ТК
+  definition: Среднее время от оплаты заказа до передачи в транспортную компанию; публичный KPI — 22 ч 52 мин
+  formula: avg(handed_to_carrier_at - paid_at)
+  source: erp
+  owner: Зам. по производству
+  unit: ч
+  display: {relative: pct_of_target, natural: ч}
+  direction: lower_better
+  priority: time
+  tile: delivery
+  stage: 6
+  aggregation: mean
+  thresholds:
+    default: {target: 22.87, warn: 48, crit: 72}
+  synthetic: true
+
+defect_rate:
+  title: Доля брака
+  definition: Доля изделий, отбракованных ОТК, от выпуска за сутки
+  formula: rejected_items / produced_items
+  source: erp
+  owner: Зам. по производству
+  unit: "%"
+  display: {relative: pct_of_target, natural: "%"}
+  direction: lower_better
+  priority: quality
+  tile: quality
+  stage: 5
+  aggregation: mean
+  thresholds:
+    default: {target: 2.0, warn: 3.5, crit: 5.0}
+    season: {target: 2.5, warn: 4.0, crit: 6.0}
+  synthetic: true
+
+confirmed_defect_share:
+  title: Доля подтверждённого брака (ОТК)
+  definition: Доля рекламаций по браку, которые ОТК подтвердил; низкая доля — признак необоснованных претензий
+  formula: confirmed_claims / defect_claims
+  source: erp
+  owner: Зам. по производству
+  unit: "%"
+  display: {relative: pct_of_target, natural: "%"}
+  direction: higher_better
+  priority: quality
+  tile: quality
+  stage: 4
+  aggregation: mean
+  thresholds:
+    default: {target: 70, warn: 50, crit: 30}
+  synthetic: true
+
+defect_escape_rate:
+  title: Пропуск брака (ОТК)
+  definition: Доля бракованных изделий, прошедших ОТК и обнаруженных уже у клиента
+  formula: defects_found_by_customers / shipped_items
+  source: erp
+  owner: Зам. по производству
+  unit: "%"
+  display: {relative: pct_of_target, natural: "%"}
+  direction: lower_better
+  priority: quality
+  tile: quality
+  stage: 4
+  aggregation: mean
+  thresholds:
+    default: {target: 0.5, warn: 1.0, crit: 2.0}
+  synthetic: true
+
+equipment_downtime:
+  title: Простой оборудования
+  definition: Суммарное время незапланированного простоя оборудования участка за сутки
+  formula: sum(downtime)
+  source: erp
+  owner: Зам. по производству
+  unit: ч
+  display: {relative: pct_of_target, natural: ч}
+  direction: lower_better
+  priority: cost
+  tile: production
+  stage: 5
+  aggregation: sum
+  thresholds:
+    default: {target: 1, warn: 2, crit: 4}
+  synthetic: true
+
+# --- Доставка ----------------------------------------------------------------
+
+delivery_on_time_share:
+  title: Доля доставленных в срок
+  definition: Доля заказов, доставленных не позже обещанной даты
+  formula: delivered_on_time / delivered
+  source: erp
+  owner: Зам. по производству
+  unit: "%"
+  display: {relative: pct_of_target, natural: "%"}
+  direction: higher_better
+  priority: time
+  tile: delivery
+  stage: 6
+  aggregation: mean
+  thresholds:
+    default: {target: 95, warn: 90, crit: 85}
+    season: {target: 92, warn: 87, crit: 80}
+  synthetic: true
+
+pvz_unclaimed:
+  title: Незабранные в ПВЗ
+  definition: Число заказов, лежащих в пунктах выдачи дольше срока хранения (7 дней)
+  formula: count(orders at pickup point > 7 days)
+  source: erp
+  owner: Зам. по производству
+  unit: шт
+  display: {relative: pct_of_target, natural: шт}
+  direction: lower_better
+  priority: cost
+  tile: delivery
+  stage: 6
+  aggregation: last
+  thresholds:
+    default: {target: 50, warn: 100, crit: 200}
+  synthetic: true
+
+# --- Продажи и маркетинг -----------------------------------------------------
+
+orders_rhythm:
+  title: Ритм заказов (к плану)
+  definition: Число заказов за сутки относительно плана; план = 100
+  formula: orders / planned_orders * 100
+  source: crm
+  owner: Зам. по работе с клиентами
+  unit: индекс
+  display: {relative: index, natural: индекс}
+  direction: higher_better
+  priority: time
+  tile: orders
+  stage: 3
+  aggregation: mean
+  thresholds:
+    default: {target: 100, warn: 90, crit: 80}
+  synthetic: true
+
+repeat_customers_share:
+  title: Доля повторных клиентов
+  definition: Доля заказов от клиентов, у которых это не первый заказ
+  formula: repeat_orders / orders
+  source: crm
+  owner: Зам. по работе с клиентами
+  unit: "%"
+  display: {relative: pct_of_target, natural: "%"}
+  direction: higher_better
+  priority: other
+  tile: clients
+  stage: 2
+  aggregation: mean
+  thresholds:
+    default: {target: 35, warn: 30, crit: 25}
+  synthetic: true
+
+leads:
+  title: Лиды за сутки
+  definition: Число новых лидов из всех каналов за сутки
+  formula: count(leads created)
+  source: crm
+  owner: Зам. по работе с клиентами
+  unit: шт
+  display: {relative: pct_of_target, natural: шт}
+  direction: higher_better
+  priority: other
+  tile: clients
+  stage: 1
+  aggregation: sum
+  thresholds:
+    default: {target: 300, warn: 240, crit: 180}
+    season: {target: 500, warn: 400, crit: 300}
+  synthetic: true
+
+# --- Финансы: только статусы и доли, без сумм (Р7) ---------------------------
+
+paid_orders_share:
+  title: Доля оплаченных заказов
+  definition: Доля заказов за сутки со статусом «оплачен»
+  formula: paid_orders / orders
+  source: finance
+  owner: Финансы
+  unit: "%"
+  display: {relative: pct_of_target, natural: "%"}
+  direction: higher_better
+  priority: other
+  tile: orders
+  stage: 3
+  aggregation: mean
+  thresholds:
+    default: {target: 95, warn: 90, crit: 85}
+  synthetic: true
+
+overdue_settlements_share:
+  title: Доля просроченных расчётов с контрагентами
+  definition: Доля расчётов с контрагентами со статусом «просрочен»
+  formula: overdue_settlements / settlements
+  source: finance
+  owner: Финансы
+  unit: "%"
+  display: {relative: pct_of_target, natural: "%"}
+  direction: lower_better
+  priority: cost
+  tile: null
+  stage: null
+  aggregation: mean
+  thresholds:
+    default: {target: 5, warn: 10, crit: 15}
+  synthetic: true
+
+cost_to_plan_index:
+  title: Затраты к плану (индекс)
+  definition: Фактические затраты относительно плановых; план = 100, абсолютные суммы не хранятся
+  formula: actual_costs / planned_costs * 100
+  source: finance
+  owner: Финансы
+  unit: индекс
+  display: {relative: index, natural: индекс}
+  direction: lower_better
+  priority: cost
+  tile: null
+  stage: null
+  aggregation: mean
+  thresholds:
+    default: {target: 100, warn: 105, crit: 110}
+  synthetic: true
+
+# --- HR ----------------------------------------------------------------------
+
+shift_staffing:
+  title: Укомплектованность смены
+  definition: Доля занятых мест в смене от штатного расписания
+  formula: staff_present / staff_planned
+  source: hr
+  owner: HR
+  unit: "%"
+  display: {relative: pct_of_target, natural: "%"}
+  direction: higher_better
+  priority: cost
+  tile: team
+  stage: null
+  aggregation: mean
+  thresholds:
+    default: {target: 95, warn: 90, crit: 85}
+  synthetic: true
+
+shift_load:
+  title: Нагрузка смены
+  definition: Объём работы на смену относительно нормы; норма = 100 %
+  formula: workload / norm
+  source: hr
+  owner: HR
+  unit: "%"
+  display: {relative: pct_of_target, natural: "%"}
+  direction: lower_better
+  priority: cost
+  tile: team
+  stage: null
+  aggregation: mean
+  thresholds:
+    default: {target: 100, warn: 110, crit: 125}
+    season: {target: 105, warn: 115, crit: 130}
+  synthetic: true
+
+open_vacancies:
+  title: Открытые вакансии
+  definition: Число незакрытых вакансий
+  formula: count(open vacancies)
+  source: hr
+  owner: HR
+  unit: шт
+  display: {relative: pct_of_target, natural: шт}
+  direction: lower_better
+  priority: cost
+  tile: team
+  stage: null
+  aggregation: last
+  thresholds:
+    default: {target: 3, warn: 6, crit: 10}
+  synthetic: true
+
+hired_per_day:
+  title: Принято за день
+  definition: Число сотрудников, принятых на работу за сутки
+  formula: count(hired)
+  source: hr
+  owner: HR
+  unit: чел
+  display: {relative: as_is, natural: чел}
+  direction: higher_better
+  priority: other
+  tile: team
+  stage: null
+  aggregation: sum
+  thresholds: {}
+  synthetic: true
+
+fired_per_day:
+  title: Уволено за день
+  definition: Число сотрудников, уволенных за сутки
+  formula: count(fired)
+  source: hr
+  owner: HR
+  unit: чел
+  display: {relative: as_is, natural: чел}
+  direction: lower_better
+  priority: other
+  tile: team
+  stage: null
+  aggregation: sum
+  thresholds: {}
+  synthetic: true
+
+trained_share:
+  title: Доля обученных
+  definition: Доля сотрудников, прошедших обязательное обучение
+  formula: trained_staff / staff
+  source: hr
+  owner: HR
+  unit: "%"
+  display: {relative: pct_of_target, natural: "%"}
+  direction: higher_better
+  priority: quality
+  tile: team
+  stage: null
+  aggregation: last
+  thresholds:
+    default: {target: 90, warn: 80, crit: 70}
+  synthetic: true
+
+timesheet_deviations:
+  title: Табель (отклонения)
+  definition: Число отклонений от графика в табеле за сутки (опоздания, неявки, переработки)
+  formula: count(timesheet deviations)
+  source: hr
+  owner: HR
+  unit: шт
+  display: {relative: pct_of_target, natural: шт}
+  direction: lower_better
+  priority: other
+  tile: team
+  stage: null
+  aggregation: sum
+  thresholds:
+    default: {target: 2, warn: 5, crit: 10}
+  synthetic: true
+
+# --- Сотрудник ---------------------------------------------------------------
+
+tasks_done:
+  title: Выполнено задач за день
+  definition: Число задач, закрытых сотрудником за сутки
+  formula: count(tasks closed)
+  source: hr
+  owner: HR
+  unit: шт
+  display: {relative: pct_of_target, natural: шт}
+  direction: higher_better
+  priority: other
+  tile: team
+  stage: null
+  aggregation: sum
+  thresholds:
+    default: {target: 40, warn: 30, crit: 20}
+  synthetic: true
+
+personal_efficiency:
+  title: Личная эффективность (индекс)
+  definition: Выработка сотрудника относительно нормы; норма = 100
+  formula: output / norm * 100
+  source: hr
+  owner: HR
+  unit: индекс
+  display: {relative: index, natural: индекс}
+  direction: higher_better
+  priority: other
+  tile: team
+  stage: null
+  aggregation: mean
+  thresholds:
+    default: {target: 100, warn: 90, crit: 80}
+  synthetic: true
+
+# --- IT ----------------------------------------------------------------------
+
+service_availability:
+  title: Доступность сервисов
+  definition: Доля времени, когда сайт, редактор и внутренние системы были доступны
+  formula: uptime / total_time
+  source: erp
+  owner: IT
+  unit: "%"
+  display: {relative: pct_of_target, natural: "%"}
+  direction: higher_better
+  priority: time
+  tile: null
+  stage: null
+  aggregation: mean
+  thresholds:
+    default: {target: 99.5, warn: 99.0, crit: 98.0}
+  synthetic: true

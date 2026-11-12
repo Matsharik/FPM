@@ -1,0 +1,664 @@
+/* ---------- Статусы: цвет + значок + слово ---------- */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 28px;
+  padding: 0 10px 0 8px;
+  border-radius: var(--r-pill);
+  font-size: var(--fs-14);
+  font-weight: 600;
+  white-space: nowrap;
+  line-height: 1;
+}
+.badgeSm {
+  height: 24px;
+  padding: 0 8px 0 6px;
+  font-size: var(--fs-12);
+}
+.glyph {
+  display: inline-grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  color: #fff;
+  flex: none;
+}
+.badgeSm .glyph {
+  width: 16px;
+  height: 16px;
+}
+.tone-ok { background: var(--ok-soft); color: var(--ok-ink); }
+.tone-ok .glyph { background: var(--ok); }
+.tone-warn { background: var(--warn-soft); color: var(--warn-ink); }
+.tone-warn .glyph { background: var(--warn); }
+.tone-crit { background: var(--crit-soft); color: var(--crit-ink); }
+.tone-crit .glyph { background: var(--crit); }
+.tone-unknown { background: var(--unknown-soft); color: var(--unknown-ink); }
+.tone-unknown .glyph { background: var(--unknown); }
+.tone-ink { background: #ececee; color: var(--text); }
+.tone-ink .glyph { background: var(--ink); }
+
+.dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex: none;
+}
+.dot-ok { background: var(--ok); }
+.dot-warn { background: var(--warn); }
+.dot-crit { background: var(--crit); }
+.dot-unknown { background: var(--unknown); }
+.dot-ink { background: var(--ink); }
+
+.ink-ok { color: var(--ok-ink); }
+.ink-warn { color: var(--warn-ink); }
+.ink-crit { color: var(--crit-ink); }
+.ink-unknown { color: var(--text-muted); }
+.ink-ink { color: var(--text); }
+
+/* ---------- Значения ---------- */
+.kpiValue {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  font-weight: 600;
+  letter-spacing: var(--track-tight);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.kpiValue .unit {
+  font-weight: 500;
+  letter-spacing: 0;
+  color: var(--text-muted);
+}
+.size-sm { font-size: var(--fs-16); }
+.size-sm .unit { font-size: var(--fs-14); }
+.size-md { font-size: var(--fs-28); }
+.size-md .unit { font-size: var(--fs-16); }
+.size-lg { font-size: var(--fs-40); line-height: 1.05; }
+.size-lg .unit { font-size: var(--fs-20); }
+.size-xl { font-size: var(--fs-56); line-height: 1; }
+.size-xl .unit { font-size: var(--fs-20); }
+
+.delta {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-weight: 600;
+  font-size: var(--fs-14);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.deltaNote {
+  font-weight: 400;
+  color: var(--text-muted);
+  margin-left: 4px;
+}
+
+/* ---------- Ссылочные чипы ---------- */
+.ref {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 100%;
+  height: 28px;
+  padding: 0 10px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--r-chip);
+  background: var(--surface);
+  color: var(--text);
+  font-size: var(--fs-14);
+  font-weight: 500;
+  text-decoration: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: middle;
+}
+a.ref:hover,
+button.ref:hover {
+  border-color: var(--ink);
+}
+.ref svg {
+  flex: none;
+  color: var(--text-muted);
+}
+.refText {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.refDisabled {
+  background: var(--hatch);
+  color: var(--text-muted);
+  cursor: default;
+}
+.refDev {
+  font-variant-numeric: tabular-nums;
+}
+
+.inline {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-color: var(--border-strong);
+  text-underline-offset: 3px;
+}
+.inline:hover {
+  text-decoration-color: var(--ink);
+}
+
+/* ---------- Плитка ---------- */
+.tile {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-3);
+  min-height: 268px;
+  padding: var(--s-4) var(--s-4) var(--s-3);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-card);
+  text-align: left;
+  color: inherit;
+  cursor: pointer;
+  transition: border-color var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+}
+.tile:hover {
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow-1);
+}
+.tile::before {
+  content: '';
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  top: -1px;
+  height: 4px;
+  border-radius: 0 0 4px 4px;
+  background: var(--unknown);
+}
+.tile-ok::before { background: var(--ok); }
+.tile-warn::before { background: var(--warn); }
+.tile-crit::before { background: var(--crit); }
+.tile-crit {
+  border-color: #f2b8b9;
+}
+.tileEmpty {
+  min-height: 0;
+  background: var(--surface-2);
+  cursor: default;
+}
+.tileEmpty:hover {
+  border-color: var(--border);
+  box-shadow: none;
+}
+.tileHead {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--s-2);
+}
+.tileTitle {
+  font-size: var(--fs-16);
+  font-weight: 600;
+  line-height: 1.3;
+}
+.tileKpiTitle {
+  font-size: var(--fs-14);
+  color: var(--text-muted);
+  line-height: 1.35;
+  min-height: 2.7em;
+}
+.tileValueRow {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+}
+.tileSpark {
+  height: 44px;
+}
+.tileFoot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-top: auto;
+}
+/* Низкий экран (1366×768): плитки компактнее, чтобы обе строки помещались */
+@media (max-height: 900px) {
+  .tile {
+    min-height: 0;
+    gap: var(--s-2);
+    padding-top: 14px;
+  }
+  .tileSpark {
+    height: 36px;
+  }
+  .tileKpiTitle {
+    min-height: 0;
+  }
+}
+.tileEmptyText {
+  color: var(--text-muted);
+  font-size: var(--fs-14);
+  margin-top: var(--s-2);
+}
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 26px;
+  padding: 0 10px;
+  border-radius: var(--r-pill);
+  background: var(--bg);
+  font-size: var(--fs-12);
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+}
+.pillCrit { background: var(--crit-soft); color: var(--crit-ink); }
+.pillWarn { background: var(--warn-soft); color: var(--warn-ink); }
+
+/* ---------- Паспорт данных ---------- */
+.prov {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 100%;
+  padding: 2px 0;
+  border: 0;
+  background: none;
+  color: var(--text-muted);
+  font-size: var(--fs-12);
+  text-align: left;
+  cursor: pointer;
+}
+.prov:hover {
+  color: var(--text);
+}
+.provText {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.provList {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 6px 16px;
+  margin: 0;
+  font-size: var(--fs-14);
+}
+.provList dt {
+  color: var(--text-muted);
+}
+.provList dd {
+  margin: 0;
+}
+
+.hint {
+  display: inline-grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  color: var(--text-muted);
+  vertical-align: middle;
+}
+.hint:hover {
+  color: var(--text);
+  background: var(--bg);
+}
+
+/* ---------- Поповер, тултип ---------- */
+.popover {
+  z-index: 60;
+  max-width: 420px;
+  padding: var(--s-4);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  box-shadow: var(--shadow-pop);
+  color: var(--text);
+}
+.tooltip {
+  z-index: 70;
+  max-width: 320px;
+  padding: 8px 10px;
+  background: var(--ink);
+  color: #fff;
+  border-radius: 8px;
+  font-size: var(--fs-12);
+  line-height: 1.4;
+  pointer-events: none;
+}
+.popTitle {
+  font-weight: 600;
+  margin-bottom: var(--s-3);
+}
+
+/* ---------- Цепочка шагов ---------- */
+.chain {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  overflow-x: auto;
+}
+.chainStep {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1 1 0;
+  min-width: 0;
+}
+.chainStep:not(:last-child)::after {
+  content: '';
+  flex: 1 1 auto;
+  height: 2px;
+  min-width: 16px;
+  margin: 0 8px;
+  background: var(--border-strong);
+}
+.chainDone:not(:last-child)::after {
+  background: var(--ink);
+}
+.chainLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px 6px 6px;
+  border-radius: var(--r-pill);
+  border: 1px solid var(--border-strong);
+  background: var(--surface);
+  color: var(--text-muted);
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.chainNum {
+  display: inline-grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--bg);
+  color: var(--text-muted);
+  font-size: var(--fs-12);
+}
+.chainDone .chainLink {
+  color: var(--text);
+  border-color: var(--ink);
+}
+.chainDone .chainNum {
+  background: var(--ink);
+  color: #fff;
+}
+.chainCurrent .chainLink {
+  background: var(--accent);
+  color: var(--on-accent);
+  border-color: var(--ink);
+}
+.chainCurrent .chainNum {
+  background: var(--ink);
+  color: var(--accent);
+}
+
+/* ---------- Состояния ---------- */
+.state {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--s-2);
+  padding: var(--s-5);
+  border-radius: var(--r-card);
+  background: var(--surface);
+  border: 1px dashed var(--border-strong);
+}
+.stateIcon {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: var(--bg);
+  color: var(--text-muted);
+  margin-bottom: var(--s-1);
+}
+.stateTitle {
+  font-size: var(--fs-16);
+  font-weight: 600;
+}
+.stateText {
+  color: var(--text-muted);
+  max-width: 60ch;
+}
+.stateOut {
+  background: var(--hatch);
+  border-style: solid;
+  border-color: var(--border);
+}
+.stateErr {
+  border-style: solid;
+  border-color: #f2b8b9;
+}
+.stateErr .stateIcon {
+  background: var(--crit-soft);
+  color: var(--crit-ink);
+}
+
+.skeleton {
+  border-radius: 8px;
+  background: linear-gradient(90deg, #ececee 0%, #f5f5f6 50%, #ececee 100%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s linear infinite;
+}
+@keyframes shimmer {
+  to { background-position: -200% 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .skeleton { animation: none; }
+}
+
+/* ---------- Тосты, диалог ---------- */
+.toasts {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 90;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.toast {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  min-width: 320px;
+  max-width: 460px;
+  padding: 12px 14px;
+  background: var(--ink);
+  color: #fff;
+  border-radius: 14px;
+  box-shadow: var(--shadow-pop);
+  font-size: var(--fs-14);
+  animation: toastIn var(--dur) var(--ease);
+}
+.toastClose {
+  margin-left: auto;
+  border: 0;
+  background: none;
+  color: #bbb;
+  padding: 0;
+}
+.toastIcon-ok { color: #6ee7a0; }
+.toastIcon-crit { color: #ff8f91; }
+.toastIcon-warn { color: #ffbb66; }
+@keyframes toastIn {
+  from { transform: translateY(8px); opacity: 0; }
+}
+
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: grid;
+  place-items: center;
+  background: rgba(10, 10, 10, 0.32);
+}
+.dialog {
+  width: min(480px, calc(100vw - 32px));
+  padding: var(--s-5);
+  background: var(--surface);
+  border-radius: 20px;
+  box-shadow: var(--shadow-pop);
+}
+.dialogText {
+  margin: var(--s-3) 0 var(--s-5);
+  color: var(--text-muted);
+}
+.dialogActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--s-2);
+}
+
+/* ---------- Инспектор ---------- */
+.inspector {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--surface);
+  border-left: 1px solid var(--border);
+  min-width: 0;
+}
+.inspectorHead {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--s-2);
+  padding: var(--s-4) var(--s-4) var(--s-3);
+  border-bottom: 1px solid var(--border);
+}
+.inspectorTitles {
+  flex: 1;
+  min-width: 0;
+}
+.inspectorKicker {
+  font-size: var(--fs-12);
+  color: var(--text-muted);
+}
+.inspectorTitle {
+  font-size: var(--fs-20);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.25;
+}
+.inspectorBody {
+  flex: 1;
+  overflow: auto;
+  padding: var(--s-4);
+}
+.iconBtn {
+  display: inline-grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text);
+  flex: none;
+}
+.iconBtn:hover {
+  background: var(--bg);
+}
+.resizer {
+  position: absolute;
+  left: -4px;
+  top: 0;
+  bottom: 0;
+  width: 8px;
+  cursor: col-resize;
+  z-index: 2;
+}
+.resizer:hover,
+.resizer:focus-visible {
+  background: linear-gradient(90deg, transparent 3px, var(--border-strong) 3px 5px, transparent 5px);
+  outline: none;
+}
+
+/* ---------- Сегментный переключатель ---------- */
+.segmented {
+  display: inline-flex;
+  padding: 3px;
+  border-radius: var(--r-pill);
+  background: #e9e9eb;
+}
+.segmented button {
+  height: 32px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: var(--r-pill);
+  background: transparent;
+  font-size: var(--fs-14);
+  font-weight: 500;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+.segmented button[aria-pressed='true'] {
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: var(--shadow-1);
+  font-weight: 600;
+}
+
+/* ---------- Меню ---------- */
+.menu {
+  z-index: 60;
+  min-width: 240px;
+  padding: 6px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  box-shadow: var(--shadow-pop);
+}
+.menuItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 40px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 10px;
+  background: none;
+  text-align: left;
+  font-size: var(--fs-14);
+  color: var(--text);
+}
+.menuItem:hover,
+.menuItem:focus-visible {
+  background: var(--bg);
+  outline: none;
+}
+.menuItemActive {
+  font-weight: 600;
+}
+.menuSep {
+  height: 1px;
+  margin: 6px 4px;
+  background: var(--border);
+}
+.menuNote {
+  padding: 6px 10px;
+  font-size: var(--fs-12);
+  color: var(--text-muted);
+}

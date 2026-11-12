@@ -1,0 +1,300 @@
+# Демо-организация «Фотопринт» (раздел 10.1 промпта). Всё — синтетика (synthetic: true).
+#
+# Подтверждено заказчиком: под гендиректором 5 функций (финансы, IT, производство,
+# работа с клиентами, HR); клиентский блок — 6 структур (маркетинг, продажи,
+# поддержка, лидогенерация, модерация, Pick-Pack). Всё остальное — наше допущение:
+# attrs.assumed: true.
+# Глубина — только у сценарной ветки «Брак» (Поддержка → Сборка/ОТК → сотрудники,
+# Смены); у остальных узлов 2–3 KPI.
+#
+# Узлы задаются именами; связи ссылаются на имена узлов. Веса связей одного KPI
+# в сумме дают 1; если веса не заданы, они равные. Связи сверху вниз — access:
+# inherit (по ним строится зона доступа), межфункциональные — access: none (Р2).
+
+schema_version: 2
+
+nodes:
+  - name: Фотопринт
+    type: system
+    owner: Генеральный директор
+    kpis:
+      - {name: on_time_72h_share, metric: on_time_72h_share, pinned: true}
+      - {name: orders_rhythm, metric: orders_rhythm}
+
+  # --- Работа с клиентами (6 структур подтверждены) ------------------------------
+  - name: Работа с клиентами
+    type: function
+    owner: Зам. по работе с клиентами
+    kpis:
+      - {name: sla_topics_share, metric: sla_topics_share, pinned: true}
+      - {name: orders_rhythm, metric: orders_rhythm}
+
+  - name: Маркетинг
+    type: department
+    owner: Зам. по работе с клиентами
+    tile: clients
+    stage: 1
+    tags: {function: clients}
+    kpis:
+      - {name: leads, metric: leads, pinned: true}
+      - {name: repeat_customers_share, metric: repeat_customers_share}
+
+  - name: Продажи
+    type: department
+    owner: Зам. по работе с клиентами
+    tile: orders
+    stage: 3
+    tags: {function: clients}
+    kpis:
+      - {name: orders_rhythm, metric: orders_rhythm, pinned: true}
+      - {name: repeat_customers_share, metric: repeat_customers_share}
+
+  - name: Поддержка
+    type: department
+    owner: Зам. по работе с клиентами
+    tile: support
+    stage: 7
+    tags: {function: clients}
+    kpis:
+      - {name: defect_tickets_share, metric: defect_tickets_share, pinned: true}
+      - {name: sla_topics_share, metric: sla_topics_share}
+      - {name: mary_closed_share, metric: mary_closed_share}
+      - {name: reply_1min_share, metric: reply_1min_share}
+      - {name: wismo_share, metric: wismo_share}
+      - {name: tickets_inbound, metric: tickets_inbound}
+      - {name: tickets_unanswered, metric: tickets_unanswered}
+
+  - name: Лидогенерация
+    type: department
+    owner: Зам. по работе с клиентами
+    tile: clients
+    stage: 1
+    tags: {function: clients}
+    kpis:
+      - {name: leads, metric: leads, pinned: true}
+      - {name: orders_rhythm, metric: orders_rhythm}
+
+  - name: Модерация
+    type: department
+    owner: Зам. по работе с клиентами
+    tile: moderation
+    stage: 4
+    tags: {function: clients}
+    kpis:
+      - {name: moderation_queue_time, metric: moderation_queue_time, pinned: true}
+      - {name: layout_reject_share, metric: layout_reject_share}
+
+  - name: Pick-Pack
+    type: department
+    description: Pick-Pack / PicPac
+    owner: Зам. по работе с клиентами
+    tile: delivery
+    stage: 6
+    tags: {function: clients}
+    kpis:
+      - {name: delivery_on_time_share, metric: delivery_on_time_share, pinned: true}
+      - {name: pvz_unclaimed, metric: pvz_unclaimed}
+
+  # --- Производство ------------------------------------------------------------
+  - name: Производство
+    type: function
+    owner: Зам. по производству
+    kpis:
+      - {name: on_time_24h_share, metric: on_time_24h_share, pinned: true}
+      - {name: production_time, metric: production_time}
+
+  - name: Печать
+    type: department
+    owner: Зам. по производству
+    tile: production
+    stage: 5
+    attrs: {assumed: true}
+    tags: {function: production}
+    kpis:
+      - {name: site_load, metric: site_load, pinned: true}
+      - {name: equipment_downtime, metric: equipment_downtime}
+      - {name: wip_orders, metric: wip_orders}
+
+  - name: Сборка
+    type: department
+    owner: Зам. по производству
+    tile: production
+    stage: 5
+    attrs: {assumed: true}
+    tags: {function: production}
+    kpis:
+      - {name: defect_rate, metric: defect_rate, pinned: true}
+      - {name: site_load, metric: site_load}
+
+  - name: ОТК
+    type: department
+    owner: Зам. по производству
+    tile: quality
+    stage: 5
+    attrs: {assumed: true}
+    tags: {function: production}
+    kpis:
+      - {name: confirmed_defect_share, metric: confirmed_defect_share, pinned: true}
+      - {name: defect_escape_rate, metric: defect_escape_rate}
+
+  - name: Склад и отгрузка
+    type: department
+    owner: Зам. по производству
+    tile: delivery
+    stage: 6
+    attrs: {assumed: true}
+    tags: {function: production}
+    kpis:
+      - {name: pay_to_carrier_time, metric: pay_to_carrier_time, pinned: true}
+      - {name: delivery_on_time_share, metric: delivery_on_time_share}
+
+  - {name: Сборщик 1, type: person, owner: Зам. по производству, attrs: {assumed: true}, kpis: [{name: tasks_done, metric: tasks_done}, {name: personal_efficiency, metric: personal_efficiency}]}
+  - {name: Сборщик 2, type: person, owner: Зам. по производству, attrs: {assumed: true}, kpis: [{name: tasks_done, metric: tasks_done}, {name: personal_efficiency, metric: personal_efficiency}]}
+  - {name: Сборщик 3, type: person, owner: Зам. по производству, attrs: {assumed: true}, kpis: [{name: tasks_done, metric: tasks_done}, {name: personal_efficiency, metric: personal_efficiency}]}
+  - {name: Контролёр ОТК Иванова, type: person, owner: Зам. по производству, attrs: {assumed: true}, kpis: [{name: tasks_done, metric: tasks_done}, {name: personal_efficiency, metric: personal_efficiency}]}
+  - {name: Контролёр ОТК 2, type: person, owner: Зам. по производству, attrs: {assumed: true}, kpis: [{name: tasks_done, metric: tasks_done}, {name: personal_efficiency, metric: personal_efficiency}]}
+  - {name: Контролёр ОТК 3, type: person, owner: Зам. по производству, attrs: {assumed: true}, kpis: [{name: tasks_done, metric: tasks_done}, {name: personal_efficiency, metric: personal_efficiency}]}
+
+  # --- Финансы: только статусы и доли, без сумм (ТЗ) ----------------------------------
+  - name: Финансы
+    type: function
+    owner: Финансы
+    tags: {function: finance}
+    kpis:
+      - {name: paid_orders_share, metric: paid_orders_share, pinned: true}
+      - {name: overdue_settlements_share, metric: overdue_settlements_share}
+      - {name: cost_to_plan_index, metric: cost_to_plan_index}
+
+  # --- HR ----------------------------------------------------------------------
+  - name: HR
+    type: function
+    owner: HR
+    kpis:
+      - {name: shift_staffing, metric: shift_staffing, pinned: true}
+      - {name: open_vacancies, metric: open_vacancies}
+
+  - name: Подбор и кадры
+    type: department
+    owner: HR
+    tile: team
+    attrs: {assumed: true}
+    tags: {function: hr}
+    kpis:
+      - {name: open_vacancies, metric: open_vacancies, pinned: true}
+      - {name: hired_per_day, metric: hired_per_day}
+      - {name: fired_per_day, metric: fired_per_day}
+      - {name: trained_share, metric: trained_share}
+
+  - name: Смены
+    type: team
+    owner: HR
+    tile: team
+    attrs: {assumed: true}
+    tags: {function: hr}
+    kpis:
+      - {name: shift_load, metric: shift_load, pinned: true}
+      - {name: shift_staffing, metric: shift_staffing}
+      - {name: timesheet_deviations, metric: timesheet_deviations}
+
+  # --- IT ----------------------------------------------------------------------
+  - name: IT
+    type: function
+    owner: IT
+    tags: {function: it}
+    kpis:
+      - {name: service_availability, metric: service_availability, pinned: true}
+
+links:
+  # Верх: зона директора покрывает все пять функций (access: inherit).
+  - {from: Фотопринт, kpi: on_time_72h_share, to: Работа с клиентами, weight: 0.25}
+  - {from: Фотопринт, kpi: on_time_72h_share, to: Производство, weight: 0.45}
+  - {from: Фотопринт, kpi: on_time_72h_share, to: Финансы, weight: 0.1}
+  - {from: Фотопринт, kpi: on_time_72h_share, to: HR, weight: 0.1}
+  - {from: Фотопринт, kpi: on_time_72h_share, to: IT, weight: 0.1}
+
+  - {from: Работа с клиентами, kpi: sla_topics_share, to: Поддержка, to_kpi: sla_topics_share}
+  - {from: Работа с клиентами, kpi: orders_rhythm, to: Продажи, to_kpi: orders_rhythm, weight: 0.4}
+  - {from: Работа с клиентами, kpi: orders_rhythm, to: Маркетинг, weight: 0.2}
+  - {from: Работа с клиентами, kpi: orders_rhythm, to: Лидогенерация, weight: 0.2}
+  - {from: Работа с клиентами, kpi: orders_rhythm, to: Модерация, weight: 0.1}
+  - {from: Работа с клиентами, kpi: orders_rhythm, to: Pick-Pack, weight: 0.1}
+
+  - {from: Производство, kpi: on_time_24h_share, to: Печать, weight: 0.3}
+  - {from: Производство, kpi: on_time_24h_share, to: Сборка, weight: 0.3}
+  - {from: Производство, kpi: on_time_24h_share, to: ОТК, weight: 0.1}
+  - {from: Производство, kpi: on_time_24h_share, to: Склад и отгрузка, weight: 0.3}
+
+  - {from: HR, kpi: shift_staffing, to: Смены, to_kpi: shift_staffing, weight: 0.7}
+  - {from: HR, kpi: shift_staffing, to: Подбор и кадры, weight: 0.3}
+
+  # Межфункциональные связи (access: none): причина видна, доступ не наследуется.
+  - {from: Поддержка, kpi: defect_tickets_share, to: Сборка, to_kpi: defect_rate, weight: 0.6, access: none,
+     note: "Обращения по браку зависят от брака сборки"}
+  - {from: Поддержка, kpi: defect_tickets_share, to: ОТК, to_kpi: defect_escape_rate, weight: 0.25, access: none,
+     note: "Брак, пропущенный ОТК, доходит до клиента"}
+  - {from: Поддержка, kpi: defect_tickets_share, to: Склад и отгрузка, weight: 0.15, access: none,
+     note: "Повреждения при упаковке и отгрузке"}
+  - {from: Поддержка, kpi: wismo_share, to: Pick-Pack, to_kpi: delivery_on_time_share, access: none,
+     note: "«Где мой заказ» растёт, когда доставка опаздывает"}
+
+  # Сборка: брак опирается на сборщиков (равные веса) и на нагрузку смены (D53).
+  - {from: Сборка, kpi: defect_rate, to: Сборщик 1, to_kpi: personal_efficiency}
+  - {from: Сборка, kpi: defect_rate, to: Сборщик 2, to_kpi: personal_efficiency}
+  - {from: Сборка, kpi: defect_rate, to: Сборщик 3, to_kpi: personal_efficiency}
+  - {from: Сборка, kpi: defect_rate, to: Смены, to_kpi: shift_load, access: none,
+     note: "Перегрузка смены повышает брак"}
+
+  - {from: ОТК, kpi: confirmed_defect_share, to: Контролёр ОТК Иванова, to_kpi: personal_efficiency}
+  - {from: ОТК, kpi: confirmed_defect_share, to: Контролёр ОТК 2, to_kpi: personal_efficiency}
+  - {from: ОТК, kpi: confirmed_defect_share, to: Контролёр ОТК 3, to_kpi: personal_efficiency}
+
+  # Связи для KPI, у которых их не было (каждый KPI — источник или явная цель связи).
+  # Новые связи выходят только из KPI без связей: веса существующих связей и путь «Брак» не меняются.
+  # inherit — только вдоль существующей иерархии (зоны доступа прежние), остальные — access: none.
+  - {from: Фотопринт, kpi: orders_rhythm, to: Финансы, to_kpi: paid_orders_share,
+     note: "Ритм заказов держится на доле оплаченных заказов"}
+
+  - {from: Маркетинг, kpi: leads, to: Лидогенерация, to_kpi: leads, access: none,
+     note: "Лиды маркетинга приходят через каналы лидогенерации"}
+  - {from: Маркетинг, kpi: repeat_customers_share, to: Продажи, to_kpi: repeat_customers_share, access: none,
+     note: "Повторные клиенты возвращаются через продажи"}
+  - {from: Лидогенерация, kpi: orders_rhythm, to: Продажи, to_kpi: orders_rhythm, access: none,
+     note: "Лиды превращаются в заказы в продажах"}
+  - {from: Поддержка, kpi: mary_closed_share, to: Модерация, to_kpi: layout_reject_share, access: none,
+     note: "Отклонённые макеты дают сложные обращения, которые Mary не закрывает сама"}
+  - {from: Поддержка, kpi: reply_1min_share, to: Модерация, to_kpi: moderation_queue_time, access: none,
+     note: "Очередь модерации порождает вопросы «где мой макет»"}
+  - {from: Поддержка, kpi: tickets_inbound, to: Pick-Pack, to_kpi: pvz_unclaimed, access: none,
+     note: "Незабранные в ПВЗ заказы порождают обращения"}
+  - {from: Поддержка, kpi: tickets_unanswered, to: Pick-Pack, to_kpi: delivery_on_time_share, access: none,
+     note: "Опоздания доставки копят обращения без ответа"}
+
+  - {from: Производство, kpi: production_time, to: Печать, to_kpi: wip_orders, weight: 0.3}
+  - {from: Производство, kpi: production_time, to: Сборка, to_kpi: site_load, weight: 0.3}
+  - {from: Производство, kpi: production_time, to: Склад и отгрузка, to_kpi: pay_to_carrier_time, weight: 0.2}
+  - {from: Производство, kpi: production_time, to: ОТК, to_kpi: confirmed_defect_share, weight: 0.2}
+  - {from: Печать, kpi: site_load, to: Смены, to_kpi: shift_load, access: none,
+     note: "Загрузка участка зависит от нагрузки смены"}
+  - {from: Печать, kpi: wip_orders, to: Склад и отгрузка, to_kpi: delivery_on_time_share, access: none,
+     note: "Заказы, застрявшие в работе, опаздывают к отгрузке"}
+  - {from: Печать, kpi: equipment_downtime, to: Сборка, to_kpi: site_load, access: none,
+     note: "Простой печати сдвигает загрузку сборки"}
+  - {from: Сборка, kpi: site_load, to: Сборщик 1, to_kpi: tasks_done}
+  - {from: Сборка, kpi: site_load, to: Сборщик 2, to_kpi: tasks_done}
+  - {from: Сборка, kpi: site_load, to: Сборщик 3, to_kpi: tasks_done}
+  - {from: ОТК, kpi: defect_escape_rate, to: Контролёр ОТК Иванова, to_kpi: tasks_done}
+  - {from: ОТК, kpi: defect_escape_rate, to: Контролёр ОТК 2, to_kpi: tasks_done}
+  - {from: ОТК, kpi: defect_escape_rate, to: Контролёр ОТК 3, to_kpi: tasks_done}
+
+  - {from: Финансы, kpi: overdue_settlements_share, to: IT, to_kpi: service_availability, access: none,
+     note: "Сбои сервисов задерживают расчёты с контрагентами"}
+  - {from: Финансы, kpi: cost_to_plan_index, to: Смены, to_kpi: shift_load, access: none,
+     note: "Перегрузка смен даёт сверхурочные и рост затрат к плану"}
+
+  - {from: HR, kpi: open_vacancies, to: Подбор и кадры, to_kpi: open_vacancies}
+  - {from: Подбор и кадры, kpi: hired_per_day, to: Смены, to_kpi: shift_staffing, access: none,
+     note: "Принятые сотрудники закрывают укомплектованность смен"}
+  - {from: Подбор и кадры, kpi: fired_per_day, to: Смены, to_kpi: timesheet_deviations, access: none,
+     note: "Увольнения дают отклонения в табеле"}
+  - {from: Подбор и кадры, kpi: trained_share, to: Смены, to_kpi: shift_load, access: none,
+     note: "Необученные сотрудники перегружают смену"}

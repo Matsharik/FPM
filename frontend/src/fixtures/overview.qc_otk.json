@@ -1,0 +1,285 @@
+{
+  "now": "2026-11-23T09:00:00+03:00",
+  "user": "qc_otk",
+  "units": "natural",
+  "zone_nodes": 4,
+  "tiles": [
+    {
+      "key": "orders",
+      "title": "Заказы · ритм",
+      "stage": 3,
+      "priority": "time",
+      "order": 1,
+      "status": "unknown",
+      "kpis": 0,
+      "kpi_statuses": {
+        "red": 0,
+        "yellow": 0,
+        "green": 0,
+        "unknown": 0
+      },
+      "main_kpi": null,
+      "forecast_risk": {
+        "at_risk": false,
+        "horizon": 14,
+        "in_days": null,
+        "date": null,
+        "level": null,
+        "node_id": null,
+        "node_name": null,
+        "kpi": null,
+        "title": null
+      },
+      "open_deviations": 0,
+      "deviation_ids": []
+    },
+    {
+      "key": "moderation",
+      "title": "Модерация · очередь",
+      "stage": 4,
+      "priority": "time",
+      "order": 2,
+      "status": "unknown",
+      "kpis": 0,
+      "kpi_statuses": {
+        "red": 0,
+        "yellow": 0,
+        "green": 0,
+        "unknown": 0
+      },
+      "main_kpi": null,
+      "forecast_risk": {
+        "at_risk": false,
+        "horizon": 14,
+        "in_days": null,
+        "date": null,
+        "level": null,
+        "node_id": null,
+        "node_name": null,
+        "kpi": null,
+        "title": null
+      },
+      "open_deviations": 0,
+      "deviation_ids": []
+    },
+    {
+      "key": "production",
+      "title": "Производство · загрузка",
+      "stage": 5,
+      "priority": "time",
+      "order": 3,
+      "status": "unknown",
+      "kpis": 0,
+      "kpi_statuses": {
+        "red": 0,
+        "yellow": 0,
+        "green": 0,
+        "unknown": 0
+      },
+      "main_kpi": null,
+      "forecast_risk": {
+        "at_risk": false,
+        "horizon": 14,
+        "in_days": null,
+        "date": null,
+        "level": null,
+        "node_id": null,
+        "node_name": null,
+        "kpi": null,
+        "title": null
+      },
+      "open_deviations": 0,
+      "deviation_ids": []
+    },
+    {
+      "key": "delivery",
+      "title": "Доставка · статус",
+      "stage": 6,
+      "priority": "time",
+      "order": 4,
+      "status": "unknown",
+      "kpis": 0,
+      "kpi_statuses": {
+        "red": 0,
+        "yellow": 0,
+        "green": 0,
+        "unknown": 0
+      },
+      "main_kpi": null,
+      "forecast_risk": {
+        "at_risk": false,
+        "horizon": 14,
+        "in_days": null,
+        "date": null,
+        "level": null,
+        "node_id": null,
+        "node_name": null,
+        "kpi": null,
+        "title": null
+      },
+      "open_deviations": 0,
+      "deviation_ids": []
+    },
+    {
+      "key": "quality",
+      "title": "Качество",
+      "stage": null,
+      "priority": "quality",
+      "order": 5,
+      "status": "green",
+      "kpis": 2,
+      "kpi_statuses": {
+        "red": 0,
+        "yellow": 0,
+        "green": 2,
+        "unknown": 0
+      },
+      "main_kpi": {
+        "node_id": 12,
+        "node_name": "ОТК",
+        "kpi": "defect_escape_rate",
+        "title": "Пропуск брака (ОТК)",
+        "value": 0.8,
+        "value_date": "2026-11-22",
+        "unit": "%",
+        "status": "green",
+        "severity": 0.2,
+        "delta_week": 0.21,
+        "trend": "up",
+        "trend_quality": "worsening"
+      },
+      "forecast_risk": {
+        "at_risk": false,
+        "horizon": 14,
+        "in_days": null,
+        "date": null,
+        "level": null,
+        "node_id": null,
+        "node_name": null,
+        "kpi": null,
+        "title": null
+      },
+      "open_deviations": 0,
+      "deviation_ids": []
+    },
+    {
+      "key": "support",
+      "title": "Поддержка · SLA",
+      "stage": 7,
+      "priority": "quality",
+      "order": 6,
+      "status": "unknown",
+      "kpis": 0,
+      "kpi_statuses": {
+        "red": 0,
+        "yellow": 0,
+        "green": 0,
+        "unknown": 0
+      },
+      "main_kpi": null,
+      "forecast_risk": {
+        "at_risk": false,
+        "horizon": 14,
+        "in_days": null,
+        "date": null,
+        "level": null,
+        "node_id": null,
+        "node_name": null,
+        "kpi": null,
+        "title": null
+      },
+      "open_deviations": 0,
+      "deviation_ids": []
+    },
+    {
+      "key": "clients",
+      "title": "Клиенты · динамика",
+      "stage": 2,
+      "priority": "other",
+      "order": 7,
+      "status": "unknown",
+      "kpis": 0,
+      "kpi_statuses": {
+        "red": 0,
+        "yellow": 0,
+        "green": 0,
+        "unknown": 0
+      },
+      "main_kpi": null,
+      "forecast_risk": {
+        "at_risk": false,
+        "horizon": 14,
+        "in_days": null,
+        "date": null,
+        "level": null,
+        "node_id": null,
+        "node_name": null,
+        "kpi": null,
+        "title": null
+      },
+      "open_deviations": 0,
+      "deviation_ids": []
+    },
+    {
+      "key": "team",
+      "title": "Команда · ресурс",
+      "stage": null,
+      "priority": "cost",
+      "order": 8,
+      "status": "green",
+      "kpis": 6,
+      "kpi_statuses": {
+        "red": 0,
+        "yellow": 0,
+        "green": 6,
+        "unknown": 0
+      },
+      "main_kpi": {
+        "node_id": 17,
+        "node_name": "Контролёр ОТК Иванова",
+        "kpi": "personal_efficiency",
+        "title": "Личная эффективность (индекс)",
+        "value": 100.33,
+        "value_date": "2026-11-22",
+        "unit": "индекс",
+        "status": "green",
+        "severity": 0,
+        "delta_week": -0.68,
+        "trend": "flat",
+        "trend_quality": "stable"
+      },
+      "forecast_risk": {
+        "at_risk": false,
+        "horizon": 14,
+        "in_days": null,
+        "date": null,
+        "level": null,
+        "node_id": null,
+        "node_name": null,
+        "kpi": null,
+        "title": null
+      },
+      "open_deviations": 0,
+      "deviation_ids": []
+    }
+  ],
+  "portfolio": {
+    "total": 0,
+    "open": 0,
+    "overdue": 0,
+    "verified": 0,
+    "failed": 0,
+    "rechecks": 0,
+    "recheck_success_rate": null,
+    "by_status": {
+      "open": 0,
+      "assigned": 0,
+      "in_progress": 0,
+      "done": 0,
+      "verified": 0,
+      "failed": 0,
+      "escalated": 0,
+      "closed": 0
+    }
+  }
+}

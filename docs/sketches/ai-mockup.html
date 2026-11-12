@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PhotoBook · Карта эффективности</title>
+<style>
+:root{
+  --bg:#f4f6fb;--panel:#fff;--ink:#172033;--muted:#748096;--line:#e7ebf2;
+  --blue:#536dfe;--blue2:#eaf0ff;--green:#16a477;--red:#e05a67;--amber:#d89a31;
+  --shadow:0 12px 34px rgba(32,48,82,.07);--radius:18px;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
+button,input,select{font:inherit}
+.app{min-height:100vh;display:grid;grid-template-columns:250px minmax(0,1fr)}
+.sidebar{background:#111a2d;color:#dce4f5;padding:26px 18px;display:flex;flex-direction:column;gap:28px}
+.brand{display:flex;align-items:center;gap:11px;padding:0 9px}
+.logo{width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,#7185ff,#9a72ed);display:grid;place-items:center;color:white;font-weight:800;font-size:17px;box-shadow:0 8px 20px #596cf044}
+.brand strong{font-size:16px;letter-spacing:.2px}.brand small{display:block;color:#8f9bb4;font-size:11px;margin-top:1px}
+.nav-label{font-size:10px;text-transform:uppercase;letter-spacing:1.4px;color:#74819c;padding:0 11px;margin-bottom:8px}
+.nav{display:grid;gap:5px}
+.nav button{border:0;background:transparent;color:#aab5ca;padding:11px 12px;border-radius:11px;text-align:left;display:flex;align-items:center;gap:12px;cursor:pointer}
+.nav button.active,.nav button:hover{background:#202c45;color:#fff}
+.nav .ico{width:20px;text-align:center;font-size:16px}
+.sidebar-bottom{margin-top:auto;background:#1c2941;border:1px solid #2a3853;border-radius:14px;padding:14px}
+.sidebar-bottom b{font-size:12px}.sidebar-bottom p{font-size:11px;color:#9eabc2;margin:6px 0 12px}
+.status-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#3bc69a;margin-right:6px}
+main{min-width:0;padding:28px 30px 34px}
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:18px;margin-bottom:24px}
+.eyebrow{font-size:11px;color:var(--muted);letter-spacing:.7px;text-transform:uppercase}
+h1{font-size:26px;letter-spacing:-.8px;margin:4px 0 0}
+.top-actions{display:flex;align-items:center;gap:10px}
+select,.search{background:white;border:1px solid var(--line);border-radius:11px;padding:10px 12px;color:#364258;outline:none}
+.search{width:210px}
+.avatar{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;background:#e9eaff;color:#5b63ca;font-weight:700}
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:18px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px 18px;box-shadow:var(--shadow)}
+.stat-head{display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-size:12px}
+.stat-icon{width:30px;height:30px;border-radius:10px;background:#f0f3ff;display:grid;place-items:center;color:var(--blue)}
+.stat-value{font-size:26px;font-weight:750;letter-spacing:-.8px;margin:8px 0 3px}
+.stat-foot{font-size:11px;color:var(--muted)}.up{color:var(--green);font-weight:650}.down{color:var(--red);font-weight:650}
+.content-grid{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:16px;align-items:start}
+.panel{background:white;border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);min-width:0}
+.panel-head{padding:18px 20px 13px;display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.panel-head h2{font-size:15px;margin:0 0 4px}.panel-head p{font-size:11px;color:var(--muted);margin:0}
+.legend{display:flex;gap:12px;flex-wrap:wrap;color:var(--muted);font-size:10px}
+.legend span{display:flex;align-items:center;gap:5px}.legend i{width:7px;height:7px;border-radius:50%;display:inline-block}
+.map-tools{display:flex;gap:7px}
+.small-btn{border:1px solid var(--line);background:#fff;border-radius:9px;padding:7px 10px;color:#59657b;font-size:11px;cursor:pointer}
+.small-btn:hover{border-color:#aebcff;color:var(--blue)}
+.map-viewport{height:650px;overflow:auto;background:radial-gradient(#dfe5f1 0.8px,transparent .8px);background-size:18px 18px;border-top:1px solid #f0f2f7;border-radius:0 0 var(--radius) var(--radius)}
+#mapSvg{display:block;min-width:1480px;width:100%;height:650px}
+.edge{fill:none;stroke:#cbd3e1;stroke-width:2;opacity:.9;marker-end:url(#arrow)}
+.edge.active{stroke:#7185ff;stroke-width:2.8;opacity:1}
+.node{cursor:pointer;outline:none}
+.node rect.card{fill:#fff;stroke:#e2e7f0;stroke-width:1.2;filter:drop-shadow(0 4px 7px rgba(28,43,75,.07));transition:.16s}
+.node:hover rect.card{stroke:#9baaff;filter:drop-shadow(0 6px 10px rgba(63,85,180,.13))}
+.node.selected rect.card{stroke:#536dfe;stroke-width:2.4;fill:#f8f9ff}
+.node text{pointer-events:none;font-family:inherit}
+.node .node-title{font-size:12px;font-weight:700;fill:#253149}
+.node .node-value{font-size:16px;font-weight:800;fill:#18233a}
+.node .node-sub{font-size:9px;fill:#8490a5}
+.node .node-tag{font-size:8px;font-weight:700}
+.node .accent{rx:3}
+.detail{position:sticky;top:18px;overflow:hidden}
+.detail-top{padding:19px 19px 15px;border-bottom:1px solid var(--line)}
+.detail-kicker{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--muted)}
+.detail h2{font-size:18px;letter-spacing:-.4px;margin:6px 0 7px}
+.detail-value{display:flex;align-items:baseline;gap:9px}
+.detail-value strong{font-size:30px;letter-spacing:-1px}
+.delta{font-size:11px;font-weight:700}
+.detail-desc{font-size:11px;color:var(--muted);margin:9px 0 0}
+.detail-body{padding:16px 19px}
+.section-title{font-size:11px;font-weight:750;margin:0 0 10px;color:#45516a}
+.chart-wrap{height:130px;background:#fafbfe;border:1px solid #eef1f6;border-radius:12px;padding:8px}
+#chart{width:100%;height:100%;overflow:visible}
+.chart-labels{display:flex;justify-content:space-between;color:#a0a9b8;font-size:9px;margin-top:4px}
+.detail-block{margin-top:19px}
+.dep-list{display:grid;gap:8px}
+.dep-item{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:9px 10px;border:1px solid #edf0f5;border-radius:10px;cursor:pointer}
+.dep-item:hover{border-color:#b6c2ff;background:#fafbff}
+.dep-item b{font-size:11px;font-weight:650}.dep-item small{display:block;color:var(--muted);font-size:9px;margin-top:2px}
+.dep-item strong{font-size:11px;white-space:nowrap}
+.badge{font-size:9px;font-weight:700;padding:4px 7px;border-radius:20px;white-space:nowrap}
+.badge.good{background:#e7f7f1;color:#168a67}.badge.bad{background:#fff0f1;color:#ce4f5b}.badge.warn{background:#fff6e7;color:#b17b22}
+.insight{background:#f3f6ff;border:1px solid #e4eaff;border-radius:12px;padding:12px;margin-top:17px}
+.insight b{font-size:10px;color:#5365bd}.insight p{font-size:10px;color:#56627b;margin:5px 0 0;line-height:1.55}
+.detail-actions{display:flex;gap:8px;margin-top:14px}
+.primary{background:var(--blue);border:0;color:#fff;padding:9px 12px;border-radius:10px;font-size:11px;font-weight:650;cursor:pointer}
+.primary:hover{background:#4059e8}
+.secondary{background:#fff;border:1px solid var(--line);color:#56627b;padding:9px 12px;border-radius:10px;font-size:11px;cursor:pointer}
+.footer-note{color:#98a2b3;font-size:10px;margin:15px 2px 0}
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(20px);background:#17233a;color:white;padding:10px 16px;border-radius:10px;font-size:12px;opacity:0;transition:.2s;pointer-events:none;box-shadow:var(--shadow)}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+@media(max-width:1150px){.content-grid{grid-template-columns:minmax(0,1fr)}.detail{position:relative;top:auto}.detail-body{display:grid;grid-template-columns:1fr 1fr;gap:0 20px}.detail-top{padding-bottom:12px}.kpis{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:760px){.app{grid-template-columns:1fr}.sidebar{display:none}main{padding:18px 13px}.topbar{align-items:flex-start;flex-direction:column}.top-actions{width:100%;flex-wrap:wrap}.search{flex:1;min-width:130px}.kpis{gap:8px}.stat{padding:12px}.stat-value{font-size:21px}.content-grid{gap:12px}.map-viewport{height:570px}#mapSvg{height:570px}.detail-body{display:block}}
+
+/* refinement pass: consistent rhythm, safer text wrapping and editor UI */
+:root{--radius:17px;--shadow:0 8px 24px rgba(32,48,82,.055)}
+body{font-size:13px;line-height:1.5;overflow-x:hidden}
+button{transition:background .16s,border-color .16s,color .16s,transform .16s}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid rgba(83,109,254,.22);outline-offset:2px}
+main{padding:26px clamp(16px,2.4vw,32px) 32px}
+.topbar{margin-bottom:21px;align-items:center}
+h1{font-size:clamp(22px,2vw,27px);line-height:1.2}
+.top-actions{flex-wrap:wrap;justify-content:flex-end}
+.search{width:min(230px,24vw);min-width:160px}
+.kpis{gap:12px;margin-bottom:17px}
+.stat{padding:15px 17px;min-width:0}
+.stat-head{gap:8px;min-height:30px}
+.stat-value{font-size:clamp(21px,2vw,26px);line-height:1.15;overflow-wrap:anywhere}
+.stat-foot{line-height:1.4;min-height:16px}
+.content-grid{grid-template-columns:minmax(0,1fr) 355px;gap:15px}
+.panel-head{padding:17px 18px 12px;align-items:center}#mapHeading{flex-wrap:wrap}#mapHeading .map-tools{width:100%;justify-content:flex-start;max-width:100%}
+.panel-head h2{font-size:14px;line-height:1.35}
+.panel-head p{line-height:1.45;max-width:540px}
+.map-tools{display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end}
+.small-btn{font-size:11px;line-height:1.2;padding:8px 10px;white-space:nowrap}.small-btn:disabled{opacity:.42;cursor:not-allowed}
+.small-btn.primary{color:white}
+.map-viewport{height:min(72vh,780px);min-height:520px;overflow:auto;overscroll-behavior:contain;background-color:#fbfcff;background-image:radial-gradient(#dfe5f1 .8px,transparent .8px);background-size:18px 18px;position:relative;cursor:grab;user-select:none;-webkit-user-select:none;touch-action:none}
+.map-viewport.is-panning{cursor:grabbing}
+.map-viewport #mapSvg{user-select:none;-webkit-user-select:none;display:block;min-width:0}
+.zoom-tools{display:flex;align-items:center;gap:4px;padding:3px;border:1px solid #e7ebf2;border-radius:11px;background:#f8f9fc}
+.zoom-tools .small-btn{min-width:31px;padding:7px 8px;background:#fff}
+.zoom-tools .zoom-label{min-width:54px;font-variant-numeric:tabular-nums;font-weight:700;color:#66728a}
+.zoom-tools .zoom-btn{font-size:15px;line-height:1}
+.map-hint{position:sticky;left:12px;bottom:10px;z-index:2;display:flex;align-items:center;gap:9px;width:max-content;max-width:calc(100% - 24px);margin:0 0 10px 12px;padding:7px 10px;border:1px solid rgba(224,230,240,.9);border-radius:9px;background:rgba(255,255,255,.88);backdrop-filter:blur(8px);color:#8490a4;font-size:9px;line-height:1.2;pointer-events:none;box-shadow:0 3px 12px rgba(32,48,82,.05)}
+.map-hint i{width:3px;height:3px;border-radius:50%;background:#b7c0d0}
+#mapSvg{display:block;min-width:100%;width:100%;height:auto;max-width:none}
+.detail{position:sticky;top:14px}
+.detail-top{padding:18px 18px 14px}
+.detail h2{font-size:17px;line-height:1.3;overflow-wrap:anywhere}
+.detail-value{flex-wrap:wrap;gap:7px;align-items:baseline}
+.detail-value strong{font-size:clamp(25px,2.5vw,30px);line-height:1.2;overflow-wrap:anywhere}
+.detail-desc{line-height:1.55;font-size:11px}
+.detail-body{padding:15px 18px}
+.section-title{font-size:11px;line-height:1.4}
+.chart-wrap{height:125px}
+.dep-list{gap:7px}
+.dep-item{min-width:0;align-items:center}
+.dep-item>div:first-child{min-width:0;flex:1}
+.dep-item b{display:block;line-height:1.35;overflow-wrap:anywhere}
+.dep-item small{line-height:1.35;overflow-wrap:anywhere}
+.dep-item>div:last-child{text-align:right;flex-shrink:0;max-width:46%}
+.dep-item strong{white-space:normal;overflow-wrap:anywhere}
+.badge{display:inline-block;line-height:1.2}
+.insight p{line-height:1.6;overflow-wrap:anywhere}
+.detail-actions{flex-wrap:wrap}
+.primary,.secondary{font-size:11px;line-height:1.3;padding:9px 11px}
+.footer-note{line-height:1.5}
+/* graph nodes */
+.edge{fill:none;stroke:#cbd3e1;stroke-width:1.8;opacity:.9;marker-end:url(#arrow)}
+.edge.active{stroke:#7185ff;stroke-width:2.8;opacity:1}
+.node rect.card{stroke:#e4e9f1;stroke-width:1.2;filter:drop-shadow(0 3px 5px rgba(28,43,75,.055))}
+.node text{font-family:inherit}
+.node .node-title{font-size:11.5px;font-weight:700;fill:#253149}
+.node .node-value{font-size:13px;font-weight:800;fill:#18233a}
+.node .node-sub{font-size:8.5px;letter-spacing:.5px;fill:#8a95a8}
+.node .node-tag{font-size:8px;font-weight:700}
+.node.selected rect.card{stroke:#536dfe;stroke-width:2.2;fill:#f8f9ff}
+.node:focus-visible rect.card{stroke:#536dfe;stroke-width:2.4}
+.edit-controls{display:none;gap:7px;flex-wrap:wrap;justify-content:flex-end}
+body.edit-mode .edit-controls{display:flex}
+body.edit-mode #editToggle{background:#eaf0ff;color:#4258dc;border-color:#cdd7ff}
+.edit-mode-note{display:none;font-size:10px;color:#6573b4;background:#f3f5ff;border-top:1px solid #e8ecff;padding:8px 18px}
+body.edit-mode .edit-mode-note{display:block}
+/* modal editor */
+dialog{border:0;border-radius:18px;padding:0;width:min(620px,calc(100vw - 28px));max-height:min(90vh,850px);box-shadow:0 26px 80px rgba(16,28,52,.28);color:var(--ink)}
+dialog::backdrop{background:rgba(14,23,41,.48);backdrop-filter:blur(3px)}
+.modal-head{padding:19px 22px 14px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+.modal-head h2{margin:0;font-size:17px}.modal-head p{margin:4px 0 0;color:var(--muted);font-size:11px}
+.modal-close{border:0;background:#f1f3f8;border-radius:9px;width:30px;height:30px;cursor:pointer;color:#65718a;font-size:18px}
+.modal-body{padding:18px 22px 20px;overflow:auto;max-height:calc(90vh - 140px)}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+.field{display:grid;gap:5px;min-width:0}.field.full{grid-column:1/-1}
+.field label{font-size:10px;font-weight:700;color:#667188}
+.field input,.field select,.field textarea{border:1px solid #e1e6ef;border-radius:10px;padding:10px 11px;background:#fff;color:#253149;min-width:0;width:100%;font:inherit;font-size:12px;outline:none}
+.field textarea{resize:vertical;min-height:70px;line-height:1.5}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:#98a9ff;box-shadow:0 0 0 3px #536dfe15}
+.parent-chip{font-size:11px;background:#f3f5fb;border:1px solid #e8ecf4;border-radius:9px;padding:9px 11px;color:#59657c}
+.modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:17px;flex-wrap:wrap}
+#editorHint{font-size:10px;color:#8792a5;margin-top:11px;line-height:1.5}
+@media(max-width:1250px){.content-grid{grid-template-columns:minmax(0,1fr)}.detail{position:relative;top:auto}.detail-body{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:0 18px}.detail-body>.detail-block:last-child{grid-column:1/-1}.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:760px){.app{grid-template-columns:1fr}.sidebar{display:none}main{padding:16px 12px 24px}.topbar{align-items:flex-start;flex-direction:column}.top-actions{width:100%;justify-content:flex-start}.search{flex:1;width:auto}.kpis{gap:8px}.stat{padding:12px}.stat-value{font-size:20px}.map-viewport{height:560px;min-height:480px}.panel-head{align-items:flex-start;flex-direction:column}.map-tools{justify-content:flex-start;width:100%}.zoom-tools{order:0}.detail-body{display:block}.form-grid{grid-template-columns:1fr}.field.full{grid-column:auto}.map-hint{font-size:8px;gap:6px;padding:6px 8px}}
+
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="sidebar">
+  <div class="brand"><div class="logo">P</div><div><strong>photobook<span style="color:#9a9eff">.</span></strong><small>Business intelligence</small></div></div>
+  <div><div class="nav-label">Рабочее пространство</div><nav class="nav">
+    <button class="active" data-nav="map"><span class="ico">⌘</span> Карта показателей</button>
+    <button data-nav="overview"><span class="ico">▦</span> Общий обзор</button>
+    <button data-nav="departments"><span class="ico">◫</span> Отделы</button>
+    <button data-nav="alerts"><span class="ico">⚑</span> Сигналы и проблемы</button>
+  </nav></div>
+  <div><div class="nav-label">Аналитика</div><nav class="nav">
+    <button data-nav="reports"><span class="ico">▤</span> Отчёты</button>
+    <button data-nav="settings"><span class="ico">⚙</span> Настройки модели</button>
+  </nav></div>
+  <div class="sidebar-bottom"><b><span class="status-dot"></span>Данные обновлены</b><p>Демонстрационная модель. Показатели и динамика сгенерированы для презентации.</p><span style="font-size:10px;color:#8f9bb4">Последнее обновление: сегодня, 09:42</span></div>
+</aside>
+<main>
+  <header class="topbar">
+    <div><div class="eyebrow">Аналитика / причинно-следственные связи</div><h1>Карта эффективности продукта</h1></div>
+    <div class="top-actions">
+      <input id="search" class="search" placeholder="⌕  Найти показатель..." />
+      <select id="period"><option value="month">Ноябрь 2026</option><option value="quarter">Последние 3 месяца</option><option value="year">2026 год</option></select>
+      <div class="avatar">А</div>
+    </div>
+  </header>
+  <section class="kpis">
+    <div class="stat"><div class="stat-head">Выручка продукта <span class="stat-icon">↗</span></div><div class="stat-value">4,82 млн ₽</div><div class="stat-foot"><span class="up">↑ 8,4%</span> к прошлому месяцу</div></div>
+    <div class="stat"><div class="stat-head">Заказы фотокниг <span class="stat-icon">▣</span></div><div class="stat-value">2 460</div><div class="stat-foot"><span class="up">↑ 5,1%</span> к прошлому месяцу</div></div>
+    <div class="stat"><div class="stat-head">Выполнение в срок <span class="stat-icon">◷</span></div><div class="stat-value">91,6%</div><div class="stat-foot"><span class="down">↓ 3,2 п.п.</span> к прошлому месяцу</div></div>
+    <div class="stat"><div class="stat-head">Индекс качества <span class="stat-icon">✳</span></div><div class="stat-value">94,2</div><div class="stat-foot"><span class="up">↑ 1,7%</span> к прошлому месяцу</div></div>
+  </section>
+  <div class="content-grid">
+    <section class="panel">
+      <div class="panel-head" id="mapHeading">
+        <div><h2>Дерево KPI и факторов влияния</h2><p>Нажмите на любой блок, чтобы раскрыть его показатели и причины изменений</p></div>
+        <div class="map-tools">
+          <button class="small-btn" id="fit">↔ По центру</button>
+          <div class="zoom-tools" aria-label="Масштаб карты">
+            <button class="small-btn zoom-btn" id="zoomOut" type="button" title="Отдалить" aria-label="Отдалить">−</button>
+            <button class="small-btn zoom-label" id="zoomReset" type="button" title="Вернуть масштаб 100%">100%</button>
+            <button class="small-btn zoom-btn" id="zoomIn" type="button" title="Приблизить" aria-label="Приблизить">＋</button>
+          </div>
+          <button class="small-btn" id="reset">Сбросить выбор</button>
+          <button class="small-btn" id="editToggle">✎ Редактировать дерево</button>
+          <div class="edit-controls" id="editControls">
+            <button class="small-btn primary" id="addNode">＋ Добавить дочерний узел</button>
+            <button class="small-btn" id="editNode">Изменить выбранный</button>
+            <button class="small-btn" id="deleteNode">Удалить выбранный</button>
+            <button class="small-btn" id="saveModel">Сохранить</button>
+            <button class="small-btn" id="exportModel">Экспорт JSON</button>
+            <button class="small-btn" id="importModel">Импорт JSON</button>
+            <input id="importFile" type="file" accept="application/json,.json" hidden>
+          </div>
+        </div>
+      </div>
+      <div class="panel-head" style="padding-top:0">
+        <div class="legend"><span><i style="background:#536dfe"></i> Продукт</span><span><i style="background:#16a477"></i> В норме</span><span><i style="background:#e05a67"></i> Требует внимания</span><span><i style="background:#d89a31"></i> Риск</span></div>
+        <div style="font-size:10px;color:#9aa4b5">Уровень 1 → 2 → 3</div>
+      </div>
+      <div class="edit-mode-note">Режим редактирования: выберите узел на карте, затем добавьте к нему дочерний показатель, измените его или удалите вместе с вложенными узлами.</div>
+      <div class="map-viewport" id="viewport" aria-label="Поле карты KPI">
+        <svg id="mapSvg" viewBox="0 0 1600 650" role="img" aria-label="Карта показателей продукта"></svg>
+        <div class="map-hint" id="mapHint"><span>ЛКМ + перетаскивание</span><i></i><span>Колёсико — масштаб к курсору</span></div>
+      </div>
+    </section>
+    <aside class="panel detail" id="detail">
+      <div class="detail-top">
+        <div class="detail-kicker" id="d-kicker">Продукт · верхний уровень</div>
+        <h2 id="d-title">Фотокнига</h2>
+        <div class="detail-value"><strong id="d-value">94,2%</strong><span class="delta up" id="d-delta">↑ 2,4%</span></div>
+        <p class="detail-desc" id="d-desc">Комплексная оценка эффективности продукта — от привлечения заказа до получения готовой фотокниги клиентом.</p>
+      </div>
+      <div class="detail-body">
+        <div>
+          <div class="section-title">Динамика показателя</div>
+          <div class="chart-wrap"><svg id="chart" viewBox="0 0 300 115" preserveAspectRatio="none"></svg></div>
+          <div class="chart-labels"><span>1 ноя</span><span>15 ноя</span><span>30 ноя</span></div>
+        </div>
+        <div class="detail-block">
+          <div class="section-title">От чего зависит</div>
+          <div class="dep-list" id="dependencies"></div>
+        </div>
+        <div class="detail-block" style="grid-column:1/-1">
+          <div class="section-title">Что важно знать</div>
+          <div class="insight"><b id="insight-title">Ключевое наблюдение</b><p id="insight-text">Нажмите на KPI в карте, чтобы увидеть факторы, которые формируют его значение.</p></div>
+          <div class="detail-actions"><button class="primary" id="trace">Проследить причину ↓</button><button class="secondary" id="copy">Скопировать данные</button></div>
+        </div>
+      </div>
+    </aside>
+  </div>
+  <div class="footer-note">* Все значения, подразделения и события в интерфейсе — демонстрационные. Логика связей показывает, как можно отслеживать первопричину изменения KPI.</div>
+</main>
+</div>
+
+<dialog id="nodeDialog">
+  <div class="modal-head"><div><h2 id="modalTitle">Добавить узел</h2><p id="modalSubtitle">Новый показатель будет связан с выбранным узлом.</p></div><button class="modal-close" id="modalClose" type="button" aria-label="Закрыть">×</button></div>
+  <div class="modal-body">
+    <form id="nodeForm">
+      <div class="field full" style="margin-bottom:13px"><label>РОДИТЕЛЬСКИЙ УЗЕЛ</label><div class="parent-chip" id="parentInfo">Фотокнига</div></div>
+      <div class="form-grid">
+        <div class="field full"><label for="fName">Название узла *</label><input id="fName" required maxlength="64" placeholder="Например, Скорость сборки"></div>
+        <div class="field"><label for="fValue">Текущее значение *</label><input id="fValue" required maxlength="24" placeholder="Например, 42 стр/мин"></div>
+        <div class="field"><label for="fDelta">Изменение за период</label><input id="fDelta" maxlength="24" placeholder="Например, −4,5%"></div>
+        <div class="field"><label for="fUnit">Единица измерения</label><input id="fUnit" maxlength="48" placeholder="Например, страниц в минуту"></div>
+        <div class="field"><label for="fStatus">Состояние</label><select id="fStatus"><option value="good">В норме</option><option value="warn">Риск</option><option value="bad">Проблема</option></select></div>
+        <div class="field full"><label for="fDesc">Описание показателя</label><textarea id="fDesc" maxlength="360" placeholder="Что именно измеряет этот показатель?"></textarea></div>
+        <div class="field full"><label for="fInsight">Ключевое наблюдение</label><input id="fInsight" maxlength="100" placeholder="Например, скорость линии снизилась"></div>
+        <div class="field full"><label for="fNote">Причина / комментарий</label><textarea id="fNote" maxlength="500" placeholder="Что повлияло на показатель и что стоит проверить?"></textarea></div>
+      </div>
+      <div id="editorHint">После сохранения узел появится на карте и станет доступен для дальнейшей детализации.</div>
+      <div class="modal-actions"><button class="secondary" id="cancelEdit" type="button">Отмена</button><button class="primary" type="submit">Сохранить узел</button></div>
+    </form>
+  </div>
+</dialog>
+
+<div class="toast" id="toast"></div>
+<script>
+const DEFAULT_NODES = [
+{id:'product',parent:null,level:0,x:690,y:24,w:220,h:78,type:'product',name:'Фотокнига',value:'94,2%',delta:'+2,4%',status:'good',unit:'индекс эффективности',desc:'Комплексная оценка эффективности продукта — от привлечения заказа до получения готовой фотокниги клиентом.',insight:'Общая эффективность растёт',note:'Рост продаж компенсирует часть потерь на производстве и доставке. Главная зона внимания — скорость печати.',deps:['production','logistics','marketing','sales','service','procurement']},
+{id:'production',parent:'product',level:1,x:35,y:160,w:205,h:78,type:'dept',name:'Производство',value:'87,4%',delta:'−6,8%',status:'bad',unit:'выполнение плана',desc:'Скорость и качество изготовления фотокниг: печать, сборка, переплёт и контроль качества.',insight:'Скорость печати снизилась на 18%',note:'Основная причина — простой печатного станка №2. Время ожидания ремонта увеличило очередь заказов.',deps:['print-speed','defect-rate']},
+{id:'logistics',parent:'product',level:1,x:290,y:160,w:205,h:78,type:'dept',name:'Логистика',value:'91,6%',delta:'−3,2 п.п.',status:'warn',unit:'доставка в срок',desc:'Передача готовых фотокниг в доставку и выполнение обещанного срока получения.',insight:'Задержки на сортировке',note:'В нескольких регионах выросло время обработки отправлений. Стоит проверить загрузку партнёра.',deps:['delivery-time','damage-rate']},
+{id:'marketing',parent:'product',level:1,x:545,y:160,w:205,h:78,type:'dept',name:'Маркетинг',value:'4,8%',delta:'+0,6 п.п.',status:'good',unit:'конверсия в заказ',desc:'Эффективность рекламных каналов, контента, акций и привлечения новых покупателей.',insight:'Реклама приводит больше заказов',note:'Кампания «Подарок в воспоминаниях» дала рост конверсии. Цена привлечения остаётся в целевом диапазоне.',deps:['ad-conversion','cac']},
+{id:'sales',parent:'product',level:1,x:800,y:160,w:205,h:78,type:'dept',name:'Продажи',value:'2 460',delta:'+5,1%',status:'good',unit:'оформленные заказы',desc:'Путь клиента от корзины до подтверждённого заказа и оплаты.',insight:'Конверсия оформления стабильна',note:'Основной резерв — сокращение брошенных корзин на шаге выбора формата и обложки.',deps:['checkout-rate','avg-check']},
+{id:'service',parent:'product',level:1,x:1055,y:160,w:205,h:78,type:'dept',name:'Клиентский сервис',value:'4,7/5',delta:'+0,2',status:'good',unit:'оценка клиентов',desc:'Поддержка покупателей, скорость ответа и решение вопросов по заказам.',insight:'Клиенты довольны поддержкой',note:'Средняя оценка выросла благодаря сокращению времени первого ответа.',deps:['response-time','csat']},
+{id:'procurement',parent:'product',level:1,x:1310,y:160,w:205,h:78,type:'dept',name:'Закупки',value:'96,3%',delta:'−1,1 п.п.',status:'warn',unit:'обеспеченность материалами',desc:'Наличие бумаги, обложек, клея и расходников для бесперебойного производства.',insight:'Небольшой риск дефицита бумаги',note:'Запас фотобумаги снизился ниже комфортного уровня из-за увеличения объёма заказов.',deps:['paper-stock','material-cost']},
+{id:'print-speed',parent:'production',level:2,x:30,y:350,w:210,h:76,type:'kpi',name:'Скорость печати',value:'42 стр/мин',delta:'−18%',status:'bad',unit:'страниц в минуту',desc:'Средняя фактическая производительность печатного оборудования за смену.',insight:'Станок №2 простаивал 19 часов',note:'С 12 ноября оборудование работало с перебоями. После остановки скорость линии снизилась с 51 до 42 страниц в минуту.',deps:['machine-downtime','operator-load']},
+{id:'defect-rate',parent:'production',level:2,x:30,y:535,w:210,h:76,type:'kpi',name:'Доля брака',value:'2,8%',delta:'+0,9 п.п.',status:'warn',unit:'от всех экземпляров',desc:'Доля фотокниг, не прошедших контроль качества с первого раза.',insight:'Брак вырос на этапе переплёта',note:'Чаще всего выявляются смещение страниц и неровная проклейка корешка.',deps:['binding-quality','paper-moisture']},
+{id:'delivery-time',parent:'logistics',level:2,x:285,y:350,w:210,h:76,type:'kpi',name:'Срок доставки',value:'3,8 дня',delta:'+0,6 дня',status:'warn',unit:'среднее время',desc:'Среднее время от передачи заказа перевозчику до вручения клиенту.',insight:'Сортировка добавляет почти сутки',note:'В пиковые дни посылки дольше ожидают обработки на региональном складе.',deps:['sorting-delay','route-load']},
+{id:'damage-rate',parent:'logistics',level:2,x:285,y:535,w:210,h:76,type:'kpi',name:'Повреждения',value:'0,7%',delta:'−0,2 п.п.',status:'good',unit:'заказов с повреждением',desc:'Доля доставок, при которых упаковка или фотокнига повреждены.',insight:'Новая упаковка работает',note:'Защитные уголки снизили повреждения при перевозке.',deps:['packaging-strength','handling']},
+{id:'ad-conversion',parent:'marketing',level:2,x:540,y:350,w:210,h:76,type:'kpi',name:'Конверсия рекламы',value:'4,8%',delta:'+0,6 п.п.',status:'good',unit:'клик → заказ',desc:'Доля посетителей из рекламных каналов, оформивших заказ.',insight:'Лучше всего сработали видео-креативы',note:'Короткие ролики с примерами готовых альбомов дали больше заказов, чем статичные баннеры.',deps:['creative-ctr','landing-rate']},
+{id:'cac',parent:'marketing',level:2,x:540,y:535,w:210,h:76,type:'kpi',name:'Стоимость заказа',value:'312 ₽',delta:'−7,5%',status:'good',unit:'стоимость привлечения',desc:'Средние рекламные расходы на один подтверждённый заказ.',insight:'Стоимость привлечения снижается',note:'Перераспределение бюджета в пользу эффективных площадок уменьшило CAC.',deps:['channel-cost','targeting']},
+{id:'checkout-rate',parent:'sales',level:2,x:795,y:350,w:210,h:76,type:'kpi',name:'Завершение заказа',value:'68,2%',delta:'+1,4 п.п.',status:'good',unit:'корзина → оплата',desc:'Доля пользователей, завершивших оформление после добавления фотокниги в корзину.',insight:'Упростили оформление',note:'Убрали лишнее поле в форме заказа — конверсия немного выросла.',deps:['form-errors','payment-success']},
+{id:'avg-check',parent:'sales',level:2,x:795,y:535,w:210,h:76,type:'kpi',name:'Средний чек',value:'1 960 ₽',delta:'+3,2%',status:'good',unit:'на один заказ',desc:'Средняя сумма оплаченного заказа фотокниги.',insight:'Чаще выбирают премиум-обложку',note:'Дополнительные страницы и подарочная упаковка повышают среднюю стоимость заказа.',deps:['premium-share','upsell-rate']},
+{id:'response-time',parent:'service',level:2,x:1050,y:350,w:210,h:76,type:'kpi',name:'Время ответа',value:'4,2 мин',delta:'−1,1 мин',status:'good',unit:'первый ответ',desc:'Среднее время до первого ответа службы поддержки.',insight:'База ответов ускорила работу',note:'Шаблоны для типовых вопросов сократили время ответа операторов.',deps:['queue-size','agent-load']},
+{id:'csat',parent:'service',level:2,x:1050,y:535,w:210,h:76,type:'kpi',name:'Удовлетворённость',value:'4,7/5',delta:'+0,2',status:'good',unit:'оценка после обращения',desc:'Оценка клиентом качества решения вопроса после обращения в поддержку.',insight:'Больше вопросов решается с первого раза',note:'Доля повторных обращений снизилась до 8%.',deps:['first-contact','repeat-requests']},
+{id:'paper-stock',parent:'procurement',level:2,x:1305,y:350,w:210,h:76,type:'kpi',name:'Запас фотобумаги',value:'6,5 дней',delta:'−2,0 дня',status:'warn',unit:'покрытие потребности',desc:'На сколько дней текущего запаса бумаги хватит при текущем темпе производства.',insight:'Запас ниже целевого уровня',note:'Целевой запас — 10 дней. Нужно ускорить поставку бумаги формата A4.',deps:['supplier-delay','daily-consumption']},
+{id:'material-cost',parent:'procurement',level:2,x:1305,y:535,w:210,h:76,type:'kpi',name:'Цена материалов',value:'−1,8%',delta:'−1,8%',status:'good',unit:'к прошлому месяцу',desc:'Изменение средней закупочной цены основных материалов.',insight:'Удалось договориться о скидке',note:'Объёмная закупка обложек снизила среднюю закупочную цену.',deps:['supplier-price','purchase-volume']},
+{id:'machine-downtime',parent:'print-speed',level:3,x:30,y:0,w:210,h:66,type:'driver',name:'Простой станка №2',value:'19 часов',delta:'+12 ч',status:'bad',unit:'за месяц',desc:'Суммарное время, когда печатный станок №2 не мог выполнять заказы.',insight:'Первопричина падения скорости печати',note:'12 ноября вышел из строя узел подачи бумаги. Заявка на ремонт была закрыта через 19 часов.',deps:[]},
+{id:'operator-load',parent:'print-speed',level:3,x:30,y:0,w:210,h:66,type:'driver',name:'Загрузка операторов',value:'92%',delta:'+4 п.п.',status:'warn',unit:'занятость смены',desc:'Доля рабочего времени операторов, занятая производственными задачами.',insight:'Операторы перегружены',note:'После простоя часть задач перенесли на соседнюю линию.',deps:[]},
+{id:'binding-quality',parent:'defect-rate',level:3,x:30,y:0,w:210,h:66,type:'driver',name:'Качество переплёта',value:'97,2%',delta:'−1,0 п.п.',status:'warn',unit:'без замечаний',desc:'Доля экземпляров, прошедших проверку переплёта.',insight:'Нужна настройка пресса',note:'Нестабильное давление пресса даёт неровную проклейку.',deps:[]},
+{id:'paper-moisture',parent:'defect-rate',level:3,x:30,y:0,w:210,h:66,type:'driver',name:'Влажность бумаги',value:'5,4%',delta:'+0,3 п.п.',status:'warn',unit:'содержание влаги',desc:'Фактическая влажность бумаги в зоне хранения.',insight:'Показатель у верхней границы',note:'Повышенная влажность может влиять на геометрию листов.',deps:[]},
+{id:'sorting-delay',parent:'delivery-time',level:3,x:285,y:0,w:210,h:66,type:'driver',name:'Ожидание сортировки',value:'18 часов',delta:'+6 ч',status:'bad',unit:'на складе перевозчика',desc:'Время от поступления посылки на склад до начала сортировки.',insight:'Основной источник задержки',note:'Пиковая нагрузка на сортировочном центре увеличила очередь.',deps:[]},
+{id:'route-load',parent:'delivery-time',level:3,x:285,y:0,w:210,h:66,type:'driver',name:'Загрузка маршрутов',value:'86%',delta:'+3 п.п.',status:'warn',unit:'заполнение рейсов',desc:'Загрузка транспортных маршрутов партнёра.',insight:'Рейсы почти заполнены',note:'Возможны переносы отправлений на следующий рейс.',deps:[]},
+{id:'packaging-strength',parent:'damage-rate',level:3,x:285,y:0,w:210,h:66,type:'driver',name:'Прочность упаковки',value:'98,1%',delta:'+2,1 п.п.',status:'good',unit:'тест на защиту',desc:'Доля упаковок, прошедших внутренний тест на защиту.',insight:'Упаковка стала надёжнее',note:'Добавлены картонные уголки и дополнительный слой защиты.',deps:[]},
+{id:'handling',parent:'damage-rate',level:3,x:285,y:0,w:210,h:66,type:'driver',name:'Ошибки обработки',value:'0,3%',delta:'−0,1 п.п.',status:'good',unit:'отправлений',desc:'Доля отправлений с нарушением правил обращения.',insight:'Ошибок стало меньше',note:'Перевозчик провёл инструктаж сотрудников.',deps:[]},
+{id:'creative-ctr',parent:'ad-conversion',level:3,x:540,y:0,w:210,h:66,type:'driver',name:'CTR креативов',value:'3,9%',delta:'+0,8 п.п.',status:'good',unit:'клики / показы',desc:'Доля кликов по рекламным объявлениям.',insight:'Видео-креативы привлекают внимание',note:'Лучший результат у ролика с разворотом готовой фотокниги.',deps:[]},
+{id:'landing-rate',parent:'ad-conversion',level:3,x:540,y:0,w:210,h:66,type:'driver',name:'Конверсия сайта',value:'12,3%',delta:'+0,4 п.п.',status:'good',unit:'визит → корзина',desc:'Доля посетителей сайта, добавивших товар в корзину.',insight:'Страница товара стала понятнее',note:'Добавили примеры разворотов и информацию о сроках изготовления.',deps:[]},
+{id:'channel-cost',parent:'cac',level:3,x:540,y:0,w:210,h:66,type:'driver',name:'Цена клика',value:'18,4 ₽',delta:'−5,2%',status:'good',unit:'средняя стоимость',desc:'Средняя стоимость одного рекламного клика.',insight:'Снизилась цена трафика',note:'Отключили неэффективные группы объявлений.',deps:[]},
+{id:'targeting',parent:'cac',level:3,x:540,y:0,w:210,h:66,type:'driver',name:'Точность аудитории',value:'81%',delta:'+3 п.п.',status:'good',unit:'целевые визиты',desc:'Доля рекламного трафика, соответствующего целевой аудитории.',insight:'Таргетинг стал точнее',note:'Обновили сегменты по интересам и поведению покупателей.',deps:[]},
+{id:'form-errors',parent:'checkout-rate',level:3,x:795,y:0,w:210,h:66,type:'driver',name:'Ошибки формы',value:'1,2%',delta:'−0,7 п.п.',status:'good',unit:'сессий с ошибкой',desc:'Доля оформлений, в которых пользователь столкнулся с ошибкой формы.',insight:'Форма работает стабильнее',note:'Исправлена ошибка валидации номера телефона.',deps:[]},
+{id:'payment-success',parent:'checkout-rate',level:3,x:795,y:0,w:210,h:66,type:'driver',name:'Успешная оплата',value:'96,8%',delta:'+0,5 п.п.',status:'good',unit:'попыток оплаты',desc:'Доля успешных платежей от всех попыток оплаты.',insight:'Платежи проходят стабильно',note:'Сбоев платёжного шлюза за месяц не зафиксировано.',deps:[]},
+{id:'premium-share',parent:'avg-check',level:3,x:795,y:0,w:210,h:66,type:'driver',name:'Доля премиум-обложек',value:'28%',delta:'+4 п.п.',status:'good',unit:'от всех заказов',desc:'Доля заказов с премиальной обложкой.',insight:'Премиум чаще выбирают в подарок',note:'Покупатели положительно реагируют на новые варианты оформления.',deps:[]},
+{id:'upsell-rate',parent:'avg-check',level:3,x:795,y:0,w:210,h:66,type:'driver',name:'Доп. страницы',value:'1,6',delta:'+0,2',status:'good',unit:'в среднем на заказ',desc:'Среднее количество дополнительных страниц в одной фотокниге.',insight:'Дополнительные страницы повышают чек',note:'Подсказка при редактировании помогает добавить снимки.',deps:[]},
+{id:'queue-size',parent:'response-time',level:3,x:1050,y:0,w:210,h:66,type:'driver',name:'Очередь обращений',value:'12',delta:'−5',status:'good',unit:'ожидают ответа',desc:'Количество обращений, ожидающих ответа оператора.',insight:'Очередь сократилась',note:'Часть типовых вопросов закрывает автоматическая база ответов.',deps:[]},
+{id:'agent-load',parent:'response-time',level:3,x:1050,y:0,w:210,h:66,type:'driver',name:'Загрузка операторов',value:'78%',delta:'−6 п.п.',status:'good',unit:'занятость',desc:'Доля времени, когда оператор занят обработкой обращения.',insight:'Нагрузка стала равномернее',note:'Изменили распределение обращений между сменами.',deps:[]},
+{id:'first-contact',parent:'csat',level:3,x:1050,y:0,w:210,h:66,type:'driver',name:'Решение с 1-го раза',value:'89%',delta:'+5 п.п.',status:'good',unit:'обращений',desc:'Доля обращений, решённых без повторного контакта.',insight:'Больше вопросов решается сразу',note:'Обновили инструкции для операторов.',deps:[]},
+{id:'repeat-requests',parent:'csat',level:3,x:1050,y:0,w:210,h:66,type:'driver',name:'Повторные обращения',value:'8%',delta:'−2 п.п.',status:'good',unit:'от всех обращений',desc:'Доля клиентов, повторно обратившихся по той же проблеме.',insight:'Повторных вопросов меньше',note:'Улучшили уведомления о статусе заказа.',deps:[]},
+{id:'supplier-delay',parent:'paper-stock',level:3,x:1305,y:0,w:210,h:66,type:'driver',name:'Задержка поставщика',value:'2 дня',delta:'+1 день',status:'bad',unit:'от графика',desc:'Отклонение фактической поставки бумаги от согласованной даты.',insight:'Поставка опаздывает',note:'Поставщик перенёс отгрузку из-за нехватки складского запаса.',deps:[]},
+{id:'daily-consumption',parent:'paper-stock',level:3,x:1305,y:0,w:210,h:66,type:'driver',name:'Расход бумаги',value:'154 пачки',delta:'+12%',status:'warn',unit:'за неделю',desc:'Фактический расход фотобумаги за неделю.',insight:'Рост заказов увеличил расход',note:'Потребление выросло вслед за объёмом производства.',deps:[]},
+{id:'supplier-price',parent:'material-cost',level:3,x:1305,y:0,w:210,h:66,type:'driver',name:'Цена поставщика',value:'−2,4%',delta:'−2,4%',status:'good',unit:'к прошлой закупке',desc:'Изменение цены у основного поставщика материалов.',insight:'Поставщик снизил цену',note:'Согласована скидка за увеличение объёма закупки.',deps:[]},
+{id:'purchase-volume',parent:'material-cost',level:3,x:1305,y:0,w:210,h:66,type:'driver',name:'Объём закупки',value:'+14%',delta:'+14%',status:'good',unit:'к прошлому месяцу',desc:'Изменение объёма закупаемых материалов.',insight:'Оптовая закупка дала экономию',note:'Увеличенный объём позволил получить более выгодные условия.',deps:[]}
+];
+const STORAGE_KEY='photobook-kpi-tree-v2';
+const clone = value => JSON.parse(JSON.stringify(value));
+let nodes = clone(DEFAULT_NODES);
+try {
+  const saved=localStorage.getItem(STORAGE_KEY);
+  if(saved){const parsed=JSON.parse(saved);if(validateModel(parsed))nodes=parsed;}
+} catch(e) { console.warn('Не удалось прочитать сохранённую модель',e); }
+let selected='product', activePath=new Set(), editMode=false, editingId=null, addingParentId=null, initialMapPaint=true;
+let mapZoom=1, mapLogicalSize={width:1600,height:650}, suppressMapClickUntil=0;
+const svg=document.getElementById('mapSvg');
+const ns='http://www.w3.org/2000/svg';
+const statusColor=s=>s==='good'?'#16a477':s==='bad'?'#e05a67':'#d89a31';
+const statusText=s=>s==='good'?'В норме':s==='bad'?'Проблема':'Риск';
+const typeText=depth=>depth===0?'ПРОДУКТ':depth===1?'ОТДЕЛ':depth===2?'KPI':depth===3?'ФАКТОР':'ПРИЧИНА';
+const map=()=>Object.fromEntries(nodes.map(n=>[n.id,n]));
+const childrenOf=id=>nodes.filter(n=>n.parent===id);
+function validateModel(data){
+  if(!Array.isArray(data)||!data.length)return false;
+  const ids=new Set();for(const n of data){if(!n||typeof n.id!=='string'||ids.has(n.id)||typeof n.name!=='string'||!['good','warn','bad'].includes(n.status))return false;ids.add(n.id)}
+  const roots=data.filter(n=>n.parent===null);if(roots.length!==1)return false;
+  if(!data.every(n=>n.parent===null||ids.has(n.parent)))return false;
+  const root=roots[0],visited=new Set();function walk(id){if(visited.has(id))return;visited.add(id);data.filter(n=>n.parent===id).forEach(n=>walk(n.id))}walk(root.id);return visited.size===data.length;
+}
+function saveModel(show=true){
+  try{localStorage.setItem(STORAGE_KEY,JSON.stringify(nodes));if(show)toast('Модель сохранена в этом браузере');return true}
+  catch(e){toast('Не удалось сохранить модель в браузере');return false}
+}
+function currentDepth(id,dict=map()) {let d=0,n=dict[id],guard=0;while(n&&n.parent!==null&&guard++<100){d++;n=dict[n.parent]}return d}
+function ancestors(id){const dict=map(),a=new Set(),seen=new Set();let n=dict[id];while(n&&!seen.has(n.id)){a.add(n.id);seen.add(n.id);n=n.parent?dict[n.parent]:null}return a}
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toast.timer);toast.timer=setTimeout(()=>t.classList.remove('show'),2400)}
+function svgEl(tag,attrs={},parent=svg){const e=document.createElementNS(ns,tag);Object.entries(attrs).forEach(([k,v])=>e.setAttribute(k,v));parent.appendChild(e);return e}
+function svgText(parent,x,y,str,cls){const e=svgEl('text',{x,y,class:cls},parent);e.textContent=str;return e}
+function wrapSvgText(parent,x,y,str,maxChars,lineHeight,cls){
+  const words=String(str||'').split(/\s+/);const lines=[];let line='';
+  for(const word of words){const test=line?line+' '+word:word;if(test.length>maxChars&&line){lines.push(line);line=word}else line=test}
+  if(line)lines.push(line);const kept=lines.slice(0,2);if(lines.length>2)kept[1]=kept[1].replace(/[.,;:]?$/,'…');
+  kept.forEach((txt,i)=>{const t=svgText(parent,x,y+i*lineHeight,txt,cls);if(lines.length>2&&i===1)t.textContent=txt.slice(0,Math.max(1,maxChars-1))+'…'});
+}
+function layoutTree(){
+  const dict=map(), childMap={};nodes.forEach(n=>childMap[n.id]=[]);nodes.forEach(n=>{if(n.parent&&childMap[n.parent])childMap[n.parent].push(n)});
+  const root=nodes.find(n=>n.parent===null);if(!root)return {positions:{},width:1200,height:700,maxDepth:1,leafCount:1};
+  let leafIndex=0,maxDepth=0;const positions={};
+  function visit(node,depth){
+    maxDepth=Math.max(maxDepth,depth);const children=childMap[node.id]||[];let cy;
+    if(!children.length){cy=72+leafIndex*104;leafIndex++}
+    else{const ys=children.map(ch=>visit(ch,depth+1));cy=ys.reduce((a,b)=>a+b,0)/ys.length}
+    positions[node.id]={x:42+depth*278,y:cy-43,w:218,h:86,centerY:cy,depth};return cy;
+  }
+  visit(root,0);
+  return {positions,width:90+maxDepth*278+218+70,height:Math.max(650,144+Math.max(1,leafIndex)*104),maxDepth,leafCount:leafIndex,childMap};
+}
+function drawMultilineCard(g,n,pos){
+  const x=pos.x,y=pos.y,w=pos.w,h=pos.h,c=statusColor(n.status);
+  svgEl('rect',{x,y,width:w,height:h,rx:12,class:'card'},g);
+  svgEl('rect',{x,y,width:4,height:h,rx:2,fill:n.type==='product'?'#536dfe':c},g);
+  svgText(g,x+14,y+17,typeText(pos.depth),'node-sub');
+  const pillW=pos.depth===0?0:59;
+  if(pillW){svgEl('rect',{x:x+w-pillW-9,y:y+8,width:pillW,height:17,rx:8.5,fill:c+'18'},g);const t=svgText(g,x+w-pillW-4,y+20,statusText(n.status),'node-tag');t.setAttribute('fill',c)}
+  wrapSvgText(g,x+14,y+38,n.name,pos.depth===0?25:25,13,'node-title');
+  svgText(g,x+14,y+72,n.value||'—','node-value');
+  const title=svgEl('title',{},g);title.textContent=n.name+' · '+(n.value||'');
+}
+function renderMap(){
+  const layout=layoutTree(),dict=map();svg.innerHTML='';
+  mapLogicalSize={width:layout.width,height:layout.height};
+  svg.setAttribute('viewBox',`0 0 ${layout.width} ${layout.height}`);svg.setAttribute('width',layout.width);svg.setAttribute('height',layout.height);
+  updateMapSvgSize();
+  const defs=svgEl('defs');const marker=svgEl('marker',{id:'arrow',markerWidth:8,markerHeight:8,refX:6,refY:3,orient:'auto',markerUnits:'strokeWidth'},defs);svgEl('path',{d:'M0,0 L0,6 L6,3 z',fill:'#cbd3e1'},marker);
+  // Edges first, behind cards.
+  nodes.filter(n=>n.parent&&layout.positions[n.id]&&layout.positions[n.parent]).forEach(n=>{
+    const p=layout.positions[n.parent],q=layout.positions[n.id];const sx=p.x+p.w,sy=p.centerY,tx=q.x,ty=q.centerY,dx=Math.max(35,(tx-sx)*.45);
+    const active=activePath.has(n.id)&&activePath.has(n.parent);
+    svgEl('path',{d:`M ${sx} ${sy} C ${sx+dx} ${sy}, ${tx-dx} ${ty}, ${tx} ${ty}`,class:'edge'+(active?' active':'')});
+  });
+  nodes.forEach(n=>{
+    const pos=layout.positions[n.id];if(!pos)return;
+    const g=svgEl('g',{class:'node'+(selected===n.id?' selected':''),tabindex:0,role:'button','aria-label':n.name});
+    g.addEventListener('click',()=>{if(performance.now()<suppressMapClickUntil)return;selectNode(n.id)});g.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();selectNode(n.id)}});
+    drawMultilineCard(g,n,pos);
+  });
+  // On first render, center the root product node in the scrollable canvas.
+  const viewport=document.getElementById('viewport');
+  if(initialMapPaint){viewport.scrollTop=Math.max(0,layout.positions[nodes.find(n=>n.parent===null).id].centerY-viewport.clientHeight/2);initialMapPaint=false}
+  else viewport.scrollTop=Math.min(viewport.scrollTop,Math.max(0,layout.height-viewport.clientHeight));
+}
+function selectNode(id){if(!map()[id])return;selected=id;activePath=ancestors(id);renderMap();renderDetail(map()[id]);updateEditorButtons()}
+function renderDetail(n){
+  const depth=currentDepth(n.id),children=childrenOf(n.id);
+  document.getElementById('d-kicker').textContent=(depth===0?'Продукт':depth===1?'Отдел':depth===2?'KPI':depth===3?'Фактор':'Причина')+' · '+(depth===0?'верхний уровень':`уровень ${depth+1}`);
+  document.getElementById('d-title').textContent=n.name;document.getElementById('d-value').textContent=n.value||'—';
+  const delta=document.getElementById('d-delta');const change=String(n.delta||'');delta.textContent=change?(change.includes('−')||change.startsWith('-')?'↓ ':'↑ ')+change.replace(/^[+−-]/,''): 'Нет данных';delta.className='delta '+(n.status==='good'?'up':'down');
+  document.getElementById('d-desc').textContent=n.desc||'Описание для этого показателя пока не добавлено.';
+  document.getElementById('insight-title').textContent=n.insight||'Ключевое наблюдение';document.getElementById('insight-text').textContent=n.note||'Комментарий к показателю пока не добавлен.';
+  const deps=document.getElementById('dependencies');deps.innerHTML='';
+  if(!children.length){deps.innerHTML='<div style="font-size:10px;color:#7e899d;padding:8px 0;line-height:1.55">Нижний уровень модели. Чтобы раскрыть этот показатель подробнее, включите режим редактирования и добавьте дочерний узел.</div>'}
+  children.forEach(dep=>{
+    const row=document.createElement('div');row.className='dep-item';
+    const left=document.createElement('div'),name=document.createElement('b'),unit=document.createElement('small'),right=document.createElement('div'),value=document.createElement('strong'),br=document.createElement('br'),badge=document.createElement('span');
+    name.textContent=dep.name;unit.textContent=dep.unit||'Показатель';value.textContent=dep.value||'—';badge.className='badge '+dep.status;badge.textContent=statusText(dep.status);
+    left.append(name,unit);right.append(value,br,badge);row.append(left,right);row.addEventListener('click',()=>selectNode(dep.id));deps.appendChild(row);
+  });
+  drawChart(n);
+}
+function drawChart(n){
+  const chart=document.getElementById('chart');chart.innerHTML='';const seed=n.id.split('').reduce((a,c)=>a+c.charCodeAt(0),0);
+  const vals=Array.from({length:30},(_,i)=>{const base=n.status==='bad'?78:n.status==='warn'?86:91;const trend=n.status==='bad'?-0.55:n.status==='warn'?-0.18:0.13;const dip=(n.status!=='good'&&i>17&&i<24)?-((i-17)*1.4):0;return base+Math.sin((i+seed%9)/3.1)*3+i*trend+dip});
+  const min=Math.min(...vals)-3,max=Math.max(...vals)+3,pts=vals.map((v,i)=>[8+i*9.7,103-(v-min)/(max-min)*84]);
+  const path=pts.map((p,i)=>(i?'L':'M')+p[0].toFixed(1)+' '+p[1].toFixed(1)).join(' '),color=statusColor(n.status),area=path+` L ${pts.at(-1)[0]} 108 L ${pts[0][0]} 108 Z`;
+  svgEl('path',{d:area,fill:color,opacity:.09},chart);svgEl('path',{d:path,fill:'none',stroke:color,'stroke-width':2.6,'stroke-linecap':'round','stroke-linejoin':'round'},chart);
+  [25,65,105].forEach(y=>svgEl('line',{x1:5,y1:y,x2:295,y2:y,stroke:'#e9edf4','stroke-dasharray':'3 4'},chart));const last=pts.at(-1);svgEl('circle',{cx:last[0],cy:last[1],r:4,fill:color,stroke:'#fff','stroke-width':2},chart);
+}
+function updateEditorButtons(){
+  const n=map()[selected];document.getElementById('addNode').disabled=!n;document.getElementById('editNode').disabled=!n;document.getElementById('deleteNode').disabled=!n||n.parent===null;
+  document.getElementById('deleteNode').title=n&&n.parent===null?'Корневой узел удалить нельзя':'Удалить узел и всех его потомков';
+}
+function toggleEdit(){editMode=!editMode;document.body.classList.toggle('edit-mode',editMode);document.getElementById('editToggle').textContent=editMode?'✓ Завершить редактирование':'✎ Редактировать дерево';toast(editMode?'Режим редактирования включён':'Режим просмотра включён');updateEditorButtons()}
+function showNodeDialog(mode){
+  const n=map()[selected];if(!n)return;const dialog=document.getElementById('nodeDialog');editingId=mode==='edit'?n.id:null;addingParentId=mode==='add'?n.id:null;
+  document.getElementById('modalTitle').textContent=mode==='edit'?'Изменить узел':'Добавить дочерний узел';
+  document.getElementById('modalSubtitle').textContent=mode==='edit'?'Обновите название, значение и пояснения показателя.':'Новый узел будет автоматически связан с выбранным показателем.';
+  const parent=mode==='edit'?(n.parent?map()[n.parent]:null):n;
+  document.getElementById('parentInfo').textContent=mode==='edit'?(parent?parent.name:'Корневой узел — родителя нет'):`${n.name} → новый дочерний узел (уровень ${currentDepth(n.id)+2})`;
+  const data=mode==='edit'?n:{name:'',value:'',delta:'',unit:'',status:'good',desc:'',insight:'',note:''};
+  const fields={fName:'name',fValue:'value',fDelta:'delta',fUnit:'unit',fStatus:'status',fDesc:'desc',fInsight:'insight',fNote:'note'};
+  Object.entries(fields).forEach(([id,key])=>document.getElementById(id).value=data[key]||'');
+  dialog.showModal();document.getElementById('fName').focus();
+}
+function makeId(name){let base=String(name).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9а-яё]+/gi,'-').replace(/^-|-$/g,'').slice(0,24)||'node';let id=base,i=2,ids=new Set(nodes.map(n=>n.id));while(ids.has(id))id=base+'-'+i++;return id}
+function closeNodeDialog(){document.getElementById('nodeDialog').close()}
+document.getElementById('nodeForm').addEventListener('submit',e=>{
+  e.preventDefault();const fields={name:'fName',value:'fValue',delta:'fDelta',unit:'fUnit',status:'fStatus',desc:'fDesc',insight:'fInsight',note:'fNote'};const values={};Object.entries(fields).forEach(([key,id])=>values[key]=document.getElementById(id).value.trim());
+  if(!values.name||!values.value){toast('Заполните название и текущее значение');return}
+  if(editingId){const target=map()[editingId];Object.assign(target,values);selected=editingId;toast('Узел обновлён')}
+  else if(addingParentId){const id=makeId(values.name);nodes.push({id,parent:addingParentId,level:currentDepth(addingParentId)+1,x:0,y:0,w:218,h:86,type:'custom',...values,deps:[]});selected=id;toast('Новый узел добавлен')}
+  closeNodeDialog();saveModel(false);activePath=ancestors(selected);renderMap();renderDetail(map()[selected]);updateEditorButtons();
+});
+document.getElementById('deleteNode').addEventListener('click',()=>{
+  const n=map()[selected];if(!n||n.parent===null)return;const all=map(),toDelete=new Set();function collect(id){toDelete.add(id);nodes.filter(x=>x.parent===id).forEach(x=>collect(x.id))}collect(n.id);
+  if(!confirm(`Удалить «${n.name}» и все вложенные узлы (${toDelete.size} шт.)? Это действие нельзя отменить.`))return;
+  nodes=nodes.filter(x=>!toDelete.has(x.id));selected=n.parent;activePath=ancestors(selected);saveModel(false);renderMap();renderDetail(map()[selected]);updateEditorButtons();toast('Узел и вложенные показатели удалены');
+});
+document.getElementById('modalClose').addEventListener('click',closeNodeDialog);document.getElementById('cancelEdit').addEventListener('click',closeNodeDialog);
+document.getElementById('editToggle').addEventListener('click',toggleEdit);
+document.getElementById('addNode').addEventListener('click',()=>{if(editMode)showNodeDialog('add')});
+document.getElementById('editNode').addEventListener('click',()=>{if(editMode)showNodeDialog('edit')});
+document.getElementById('saveModel').addEventListener('click',()=>saveModel(true));
+document.getElementById('exportModel').addEventListener('click',()=>{
+  const blob=new Blob([JSON.stringify(nodes,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='photobook-kpi-model.json';a.click();URL.revokeObjectURL(url);toast('Резервная копия JSON скачана');
+});
+document.getElementById('importModel').addEventListener('click',()=>document.getElementById('importFile').click());
+document.getElementById('importFile').addEventListener('change',async e=>{
+  const file=e.target.files[0];if(!file)return;try{const parsed=JSON.parse(await file.text());if(!validateModel(parsed))throw new Error('Структура модели некорректна');nodes=parsed;selected=nodes.find(n=>n.parent===null).id;activePath=ancestors(selected);saveModel(false);renderMap();renderDetail(map()[selected]);updateEditorButtons();toast('Модель импортирована')}catch(err){alert('Не удалось импортировать файл: '+err.message)}finally{e.target.value=''}
+});
+function updateMapSvgSize(){
+  svg.style.width=(mapLogicalSize.width*mapZoom)+'px';
+  svg.style.height=(mapLogicalSize.height*mapZoom)+'px';
+  const label=document.getElementById('zoomReset');
+  if(label)label.textContent=Math.round(mapZoom*100)+'%';
+  const out=document.getElementById('zoomOut'),into=document.getElementById('zoomIn');
+  if(out)out.disabled=mapZoom<=0.35+0.001;
+  if(into)into.disabled=mapZoom>=2.5-0.001;
+}
+function setMapZoom(nextZoom,anchorX,anchorY){
+  const vp=document.getElementById('viewport');
+  const oldZoom=mapZoom, next=Math.max(0.35,Math.min(2.5,nextZoom));
+  if(Math.abs(next-oldZoom)<0.0001)return;
+  const x=anchorX==null?vp.clientWidth/2:anchorX;
+  const y=anchorY==null?vp.clientHeight/2:anchorY;
+  // Keep the exact map point under the cursor stationary while zooming.
+  const mapX=(vp.scrollLeft+x)/oldZoom;
+  const mapY=(vp.scrollTop+y)/oldZoom;
+  mapZoom=next;updateMapSvgSize();
+  vp.scrollLeft=mapX*mapZoom-x;
+  vp.scrollTop=mapY*mapZoom-y;
+}
+function zoomAtCenter(factor){setMapZoom(mapZoom*factor)}
+const mapViewport=document.getElementById('viewport');
+let panState=null;
+mapViewport.addEventListener('pointerdown',e=>{
+  if(e.button!==0)return;
+  if(e.target!==mapViewport&&!e.target.closest('svg'))return;
+  panState={pointerId:e.pointerId,startX:e.clientX,startY:e.clientY,startLeft:mapViewport.scrollLeft,startTop:mapViewport.scrollTop,moved:false};
+});
+window.addEventListener('pointermove',e=>{
+  if(!panState||e.pointerId!==panState.pointerId)return;
+  const dx=e.clientX-panState.startX,dy=e.clientY-panState.startY;
+  if(!panState.moved&&Math.hypot(dx,dy)>4){panState.moved=true;mapViewport.classList.add('is-panning')}
+  if(panState.moved){mapViewport.scrollLeft=panState.startLeft-dx;mapViewport.scrollTop=panState.startTop-dy}
+});
+function endMapPan(e){
+  if(!panState||e.pointerId!==panState.pointerId)return;
+  if(panState.moved)suppressMapClickUntil=performance.now()+120;
+  panState=null;mapViewport.classList.remove('is-panning');
+}
+window.addEventListener('pointerup',endMapPan);
+window.addEventListener('pointercancel',endMapPan);
+mapViewport.addEventListener('wheel',e=>{
+  e.preventDefault();
+  const rect=mapViewport.getBoundingClientRect();
+  const x=e.clientX-rect.left-mapViewport.clientLeft;
+  const y=e.clientY-rect.top-mapViewport.clientTop;
+  const factor=e.deltaY<0?1.12:1/1.12;
+  setMapZoom(mapZoom*factor,x,y);
+},{passive:false});
+document.getElementById('zoomIn').addEventListener('click',()=>zoomAtCenter(1.2));
+document.getElementById('zoomOut').addEventListener('click',()=>zoomAtCenter(1/1.2));
+document.getElementById('zoomReset').addEventListener('click',()=>setMapZoom(1));
+document.getElementById('fit').addEventListener('click',()=>{const vp=document.getElementById('viewport'),l=layoutTree(),root=nodes.find(n=>n.parent===null);vp.scrollTo({left:0,top:Math.max(0,l.positions[root.id].centerY*mapZoom-vp.clientHeight/2),behavior:'smooth'});toast('Корневой показатель в центре карты')});
+document.getElementById('reset').addEventListener('click',()=>{selected=nodes.find(n=>n.parent===null).id;activePath=ancestors(selected);renderMap();renderDetail(map()[selected]);updateEditorButtons()});
+document.getElementById('search').addEventListener('input',e=>{const q=e.target.value.trim().toLowerCase();if(!q)return;const found=nodes.find(n=>n.name.toLowerCase().includes(q)||n.id.toLowerCase().includes(q));if(found){selectNode(found.id);const p=layoutTree().positions[found.id];document.getElementById('viewport').scrollTo({left:Math.max(0,p.x*mapZoom-80),top:Math.max(0,p.y*mapZoom-160),behavior:'smooth'})}});
+document.getElementById('period').addEventListener('change',e=>{const label=e.target.options[e.target.selectedIndex].text;toast('Период отображения: '+label+' · демо-данные')});
+document.querySelectorAll('.nav button').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('active'));b.classList.add('active');
+  if(b.dataset.nav==='alerts'){const n=nodes.find(x=>x.status==='bad'&&x.parent);if(n)selectNode(n.id);toast('Показаны показатели с проблемным статусом')}
+  else if(b.dataset.nav==='departments'){const n=nodes.find(x=>currentDepth(x.id)===1);if(n)selectNode(n.id);toast('Выберите отдел на карте для детализации')}
+  else if(['overview','map'].includes(b.dataset.nav)){const root=nodes.find(n=>n.parent===null);selectNode(root.id)}
+  else toast('Раздел доступен в демонстрационной версии интерфейса');
+}));
+// Keyboard shortcut: Escape closes modal; Ctrl/Cmd+S saves the local model in edit mode.
+document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='s'){e.preventDefault();if(editMode)saveModel(true)}});
+const root=nodes.find(n=>n.parent===null);selected=root.id;activePath=ancestors(selected);renderMap();renderDetail(root);updateEditorButtons();
+</script>
+</body>
+</html>

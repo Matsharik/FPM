@@ -1,0 +1,105 @@
+{
+  "node_id": 5,
+  "name": "defect_tickets_share",
+  "metric": "defect_tickets_share",
+  "title": "Доля обращений по браку",
+  "compute": "measured",
+  "pinned": true,
+  "units": "natural",
+  "unit": "%",
+  "value": 9,
+  "value_date": "2026-11-22",
+  "status": "red",
+  "severity": 1,
+  "level": "crit",
+  "status_source": "thresholds",
+  "profile": "default",
+  "thresholds": {
+    "target": 4,
+    "warn": 6,
+    "crit": 8
+  },
+  "direction": "lower_better",
+  "priority": "quality",
+  "tile": "quality",
+  "stage": 7,
+  "source": "support",
+  "tags": {},
+  "days": 365,
+  "stale": false,
+  "agg": "day",
+  "points": [
+    {
+      "ts": "2026-11-08T21:00:00Z",
+      "value": 4
+    },
+    {
+      "ts": "2026-11-09T21:00:00Z",
+      "value": 4.07
+    },
+    {
+      "ts": "2026-11-10T21:00:00Z",
+      "value": 4.06
+    },
+    {
+      "ts": "2026-11-11T21:00:00Z",
+      "value": 3.79
+    },
+    {
+      "ts": "2026-11-12T21:00:00Z",
+      "value": 4.5
+    },
+    {
+      "ts": "2026-11-13T21:00:00Z",
+      "value": 5
+    },
+    {
+      "ts": "2026-11-14T21:00:00Z",
+      "value": 5.5
+    },
+    {
+      "ts": "2026-11-15T21:00:00Z",
+      "value": 6
+    },
+    {
+      "ts": "2026-11-16T21:00:00Z",
+      "value": 6.5
+    },
+    {
+      "ts": "2026-11-17T21:00:00Z",
+      "value": 7
+    },
+    {
+      "ts": "2026-11-18T21:00:00Z",
+      "value": 7.5
+    },
+    {
+      "ts": "2026-11-19T21:00:00Z",
+      "value": 8
+    },
+    {
+      "ts": "2026-11-20T21:00:00Z",
+      "value": 8.5
+    },
+    {
+      "ts": "2026-11-21T21:00:00Z",
+      "value": 9
+    }
+  ],
+  "flags": [
+    {
+      "ts": "2026-11-10T21:00:00Z",
+      "kind": "annotation",
+      "values": [],
+      "label": "Запуск новой обложки",
+      "ref": "E-000974"
+    },
+    {
+      "ts": "2026-11-23T06:00:00Z",
+      "kind": "critical",
+      "values": [],
+      "label": "DEV-0001: Доля обращений по браку",
+      "ref": "DEV-0001"
+    }
+  ]
+}

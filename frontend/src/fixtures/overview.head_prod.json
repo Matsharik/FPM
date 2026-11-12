@@ -1,0 +1,313 @@
+{
+  "now": "2026-11-23T09:00:00+03:00",
+  "user": "head_prod",
+  "units": "natural",
+  "zone_nodes": 11,
+  "tiles": [
+    {
+      "key": "orders",
+      "title": "Заказы · ритм",
+      "stage": 3,
+      "priority": "time",
+      "order": 1,
+      "status": "unknown",
+      "kpis": 0,
+      "kpi_statuses": {
+        "red": 0,
+        "yellow": 0,
+        "green": 0,
+        "unknown": 0
+      },
+      "main_kpi": null,
+      "forecast_risk": {
+        "at_risk": false,
+        "horizon": 14,
+        "in_days": null,
+        "date": null,
+        "level": null,
+        "node_id": null,
+        "node_name": null,
+        "kpi": null,
+        "title": null
+      },
+      "open_deviations": 0,
+      "deviation_ids": []
+    },
+    {
+      "key": "moderation",
+      "title": "Модерация · очередь",
+      "stage": 4,
+      "priority": "time",
+      "order": 2,
+      "status": "unknown",
+      "kpis": 0,
+      "kpi_statuses": {
+        "red": 0,
+        "yellow": 0,
+        "green": 0,
+        "unknown": 0
+      },
+      "main_kpi": null,
+      "forecast_risk": {
+        "at_risk": false,
+        "horizon": 14,
+        "in_days": null,
+        "date": null,
+        "level": null,
+        "node_id": null,
+        "node_name": null,
+        "kpi": null,
+        "title": null
+      },
+      "open_deviations": 0,
+      "deviation_ids": []
+    },
+    {
+      "key": "production",
+      "title": "Производство · загрузка",
+      "stage": 5,
+      "priority": "time",
+      "order": 3,
+      "status": "green",
+      "kpis": 6,
+      "kpi_statuses": {
+        "red": 0,
+        "yellow": 0,
+        "green": 6,
+        "unknown": 0
+      },
+      "main_kpi": {
+        "node_id": 10,
+        "node_name": "Печать",
+        "kpi": "wip_orders",
+        "title": "Заказов в работе (WIP)",
+        "value": 3045,
+        "value_date": "2026-11-22",
+        "unit": "шт",
+        "status": "green",
+        "severity": 0.015,
+        "delta_week": 152,
+        "trend": "flat",
+        "trend_quality": "stable"
+      },
+      "forecast_risk": {
+        "at_risk": false,
+        "horizon": 14,
+        "in_days": null,
+        "date": null,
+        "level": null,
+        "node_id": null,
+        "node_name": null,
+        "kpi": null,
+        "title": null
+      },
+      "open_deviations": 0,
+      "deviation_ids": []
+    },
+    {
+      "key": "delivery",
+      "title": "Доставка · статус",
+      "stage": 6,
+      "priority": "time",
+      "order": 4,
+      "status": "green",
+      "kpis": 2,
+      "kpi_statuses": {
+        "red": 0,
+        "yellow": 0,
+        "green": 2,
+        "unknown": 0
+      },
+      "main_kpi": {
+        "node_id": 13,
+        "node_name": "Склад и отгрузка",
+        "kpi": "pay_to_carrier_time",
+        "title": "Оплата → передача в ТК",
+        "value": 18.63,
+        "value_date": "2026-11-22",
+        "unit": "ч",
+        "status": "green",
+        "severity": 0,
+        "delta_week": 0.04,
+        "trend": "up",
+        "trend_quality": "worsening"
+      },
+      "forecast_risk": {
+        "at_risk": false,
+        "horizon": 14,
+        "in_days": null,
+        "date": null,
+        "level": null,
+        "node_id": null,
+        "node_name": null,
+        "kpi": null,
+        "title": null
+      },
+      "open_deviations": 0,
+      "deviation_ids": []
+    },
+    {
+      "key": "quality",
+      "title": "Качество",
+      "stage": null,
+      "priority": "quality",
+      "order": 5,
+      "status": "red",
+      "kpis": 3,
+      "kpi_statuses": {
+        "red": 1,
+        "yellow": 0,
+        "green": 2,
+        "unknown": 0
+      },
+      "main_kpi": {
+        "node_id": 11,
+        "node_name": "Сборка",
+        "kpi": "defect_rate",
+        "title": "Доля брака",
+        "value": 6.4,
+        "value_date": "2026-11-22",
+        "unit": "%",
+        "status": "red",
+        "severity": 1,
+        "delta_week": 3.08,
+        "trend": "up",
+        "trend_quality": "worsening"
+      },
+      "forecast_risk": {
+        "at_risk": false,
+        "horizon": 14,
+        "in_days": null,
+        "date": null,
+        "level": null,
+        "node_id": null,
+        "node_name": null,
+        "kpi": null,
+        "title": null
+      },
+      "open_deviations": 1,
+      "deviation_ids": [
+        "DEV-0001"
+      ]
+    },
+    {
+      "key": "support",
+      "title": "Поддержка · SLA",
+      "stage": 7,
+      "priority": "quality",
+      "order": 6,
+      "status": "unknown",
+      "kpis": 0,
+      "kpi_statuses": {
+        "red": 0,
+        "yellow": 0,
+        "green": 0,
+        "unknown": 0
+      },
+      "main_kpi": null,
+      "forecast_risk": {
+        "at_risk": false,
+        "horizon": 14,
+        "in_days": null,
+        "date": null,
+        "level": null,
+        "node_id": null,
+        "node_name": null,
+        "kpi": null,
+        "title": null
+      },
+      "open_deviations": 0,
+      "deviation_ids": []
+    },
+    {
+      "key": "clients",
+      "title": "Клиенты · динамика",
+      "stage": 2,
+      "priority": "other",
+      "order": 7,
+      "status": "unknown",
+      "kpis": 0,
+      "kpi_statuses": {
+        "red": 0,
+        "yellow": 0,
+        "green": 0,
+        "unknown": 0
+      },
+      "main_kpi": null,
+      "forecast_risk": {
+        "at_risk": false,
+        "horizon": 14,
+        "in_days": null,
+        "date": null,
+        "level": null,
+        "node_id": null,
+        "node_name": null,
+        "kpi": null,
+        "title": null
+      },
+      "open_deviations": 0,
+      "deviation_ids": []
+    },
+    {
+      "key": "team",
+      "title": "Команда · ресурс",
+      "stage": null,
+      "priority": "cost",
+      "order": 8,
+      "status": "green",
+      "kpis": 12,
+      "kpi_statuses": {
+        "red": 0,
+        "yellow": 0,
+        "green": 12,
+        "unknown": 0
+      },
+      "main_kpi": {
+        "node_id": 14,
+        "node_name": "Сборщик 1",
+        "kpi": "personal_efficiency",
+        "title": "Личная эффективность (индекс)",
+        "value": 100.61,
+        "value_date": "2026-11-22",
+        "unit": "индекс",
+        "status": "green",
+        "severity": 0,
+        "delta_week": 1.35,
+        "trend": "flat",
+        "trend_quality": "stable"
+      },
+      "forecast_risk": {
+        "at_risk": false,
+        "horizon": 14,
+        "in_days": null,
+        "date": null,
+        "level": null,
+        "node_id": null,
+        "node_name": null,
+        "kpi": null,
+        "title": null
+      },
+      "open_deviations": 0,
+      "deviation_ids": []
+    }
+  ],
+  "portfolio": {
+    "total": 1,
+    "open": 1,
+    "overdue": 0,
+    "verified": 0,
+    "failed": 0,
+    "rechecks": 0,
+    "recheck_success_rate": null,
+    "by_status": {
+      "open": 1,
+      "assigned": 0,
+      "in_progress": 0,
+      "done": 0,
+      "verified": 0,
+      "failed": 0,
+      "escalated": 0,
+      "closed": 0
+    }
+  }
+}

@@ -1,0 +1,178 @@
+.page {
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: var(--s-7) var(--s-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-6);
+}
+.hero {
+  display: flex;
+  align-items: center;
+  gap: var(--s-4);
+}
+.title {
+  font-size: var(--fs-40);
+  letter-spacing: var(--track-tight);
+  line-height: 1.05;
+}
+.tagline {
+  margin-top: 6px;
+  font-size: var(--fs-20);
+  color: var(--text-muted);
+}
+.reason {
+  padding: 12px 16px;
+  border-radius: 12px;
+  background: var(--warn-soft);
+  color: var(--warn-ink);
+  font-weight: 500;
+}
+.sectionHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--s-4);
+  flex-wrap: wrap;
+  margin-bottom: var(--s-3);
+}
+.note {
+  color: var(--text-muted);
+}
+.cards {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: var(--s-3);
+}
+.card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  min-height: 172px;
+  padding: var(--s-4);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-card);
+  text-align: left;
+  transition: border-color var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+}
+.card:hover {
+  border-color: var(--ink);
+  box-shadow: var(--shadow-1);
+}
+.cardCurrent {
+  border-color: var(--ink);
+  box-shadow: inset 0 0 0 1px var(--ink);
+}
+.avatar {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  margin-bottom: var(--s-2);
+  border-radius: 12px;
+  background: var(--ink);
+  color: #fff;
+  font-weight: 700;
+}
+.cardCurrent .avatar {
+  background: var(--accent);
+  color: var(--on-accent);
+  box-shadow: inset 0 0 0 1.5px var(--ink);
+}
+.cardName {
+  font-size: var(--fs-16);
+  font-weight: 600;
+  line-height: 1.25;
+}
+.cardLevel {
+  font-size: var(--fs-14);
+  font-weight: 500;
+}
+.cardZone,
+.cardMeta {
+  font-size: var(--fs-14);
+  color: var(--text-muted);
+}
+.cardMeta {
+  margin-top: auto;
+  padding-top: 6px;
+}
+.matrixSection {
+  padding-bottom: var(--s-6);
+}
+.matrixWrap {
+  overflow-x: auto;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-card);
+}
+.matrix {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--fs-14);
+}
+.matrix th,
+.matrix td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  text-align: center;
+  vertical-align: middle;
+}
+.matrix tbody tr:last-child th,
+.matrix tbody tr:last-child td {
+  border-bottom: 0;
+}
+.matrix thead th {
+  background: var(--surface-2);
+  font-weight: 600;
+  vertical-align: bottom;
+}
+.matrix thead th:first-child,
+.matrix tbody th {
+  text-align: left;
+}
+.matrix tbody th {
+  font-weight: 400;
+}
+.thName {
+  display: block;
+  line-height: 1.25;
+}
+.thLevel {
+  display: block;
+  font-weight: 400;
+  font-size: var(--fs-12);
+  color: var(--text-muted);
+}
+.permName {
+  display: block;
+  font-weight: 500;
+}
+.permOpens {
+  display: block;
+  font-size: var(--fs-12);
+  color: var(--text-muted);
+}
+.cellYes {
+  display: inline-grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--ok-soft);
+  color: var(--ok-ink);
+}
+.cellNo {
+  display: inline-grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  color: var(--border-strong);
+}
+@media (max-width: 1440px) {
+  .page {
+    padding: var(--s-6) var(--s-5);
+  }
+}

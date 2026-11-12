@@ -1,0 +1,16 @@
+# Пользователи демо-стенда (раздел 7 промпта, Р9).
+#
+# Паролей нет: пользователь называет себя заголовком `X-User: <login>`.
+# В продакшне здесь SSO/AD.
+#
+# role: admin | qc | builder (что кому можно — матрица в core/access.py).
+# scope_roots: самые верхние узлы зоны, именами или id. В зону входят они и всё,
+#   что достижимо от них вниз по связям с access: inherit (Р2).
+# node: узел самого пользователя (для qc — его личные KPI), имя или id; может не быть.
+
+users:
+  - {login: director,    name: "Генеральный директор",       role: admin,   scope_roots: ["Фотопринт"], node: null}
+  - {login: head_client, name: "Зам. по работе с клиентами", role: admin,   scope_roots: ["Работа с клиентами"]}
+  - {login: head_prod,   name: "Зам. по производству",       role: admin,   scope_roots: ["Производство"]}
+  - {login: qc_otk,      name: "Контролёр ОТК",              role: qc,      scope_roots: ["ОТК"], node: "Контролёр ОТК Иванова"}
+  - {login: builder,     name: "Методолог",                  role: builder, scope_roots: ["Фотопринт"]}

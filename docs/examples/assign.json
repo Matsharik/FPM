@@ -1,0 +1,9 @@
+{
+  "status": "assigned",
+  "action": {
+    "text": "Проверить партию материала новой обложки и усилить выходной контроль на сборке",
+    "owner_login": "head_prod",
+    "due_at": "2026-11-26T18:00:00+03:00",
+    "playbook_ref": "PB-DEFECT-BATCH"
+  }
+}

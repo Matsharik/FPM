@@ -1,0 +1,83 @@
+# Пять систем-источников и сквозной поток заказа (раздел 6 промпта). Всё — синтетика.
+#
+# Источники система только читает. На стенде режим mock: события создаёт сид,
+# в продакшне здесь коннектор только на чтение.
+
+sources:
+  - key: crm
+    title: CRM
+    system: Битрикс24
+    provides: [клиенты, сделки, коммуникации, задачи]
+    mode: mock
+  - key: support
+    title: Поддержка
+    system: Mary (омниканал)
+    provides: [обращения, темы, SLA, качество ответа]
+    mode: mock
+  - key: erp
+    title: ERP / производство
+    system: ERP
+    provides: [заказ, модерация, очередь, выпуск, доставка]
+    mode: mock
+  - key: finance
+    title: Финансы
+    system: 1С
+    provides: [статусы оплат, статусы затрат]
+    mode: mock
+    note: Только статусы, без сумм (ТЗ)
+  - key: hr
+    title: HR
+    system: HR
+    provides: [штат, смены, вакансии, нагрузка, обучение]
+    mode: mock
+
+# Сквозной поток: 8 этапов (6.3). owner — узлы-владельцы этапа по порядку
+# предпочтения: берётся первый, который есть в сети. norm_hours — норматив этапа:
+# незавершённый этап дольше норматива просрочен.
+stages:
+  - {stage: 1, name: Сигнал,       focus: "спрос / обращение",    source: crm,     owner: [Лидогенерация, Работа с клиентами], norm_hours: 2,  criterion: "обращение взято в работу в SLA"}
+  - {stage: 2, name: Клиент,       focus: "контекст / история",   source: crm,     owner: [Продажи, Работа с клиентами],       norm_hours: 4,  criterion: "карточка клиента и история заказов подтянуты"}
+  - {stage: 3, name: Заказ,        focus: "состав / статус",      source: erp,     owner: [Продажи, Работа с клиентами],       norm_hours: 24, criterion: "состав подтверждён, оплата получена"}
+  - {stage: 4, name: Проверка,     focus: "качество / ошибки",    source: erp,     owner: [Модерация, Работа с клиентами],     norm_hours: 8,  criterion: "макет прошёл модерацию без ошибок"}
+  - {stage: 5, name: Производство, focus: "очередь / готовность", source: erp,     owner: [Сборка, Производство],              norm_hours: 24, criterion: "изготовлено за 24 ч и принято ОТК"}
+  - {stage: 6, name: Доставка,     focus: "маршрут / срок",       source: erp,     owner: [Склад и отгрузка, Производство],    norm_hours: 72, criterion: "передан в ТК и доставлен в срок"}
+  - {stage: 7, name: Поддержка,    focus: "решение / причина",    source: support, owner: [Поддержка, Работа с клиентами],     norm_hours: 24, criterion: "обращений нет или обращение решено в SLA"}
+  - {stage: 8, name: Возврат,      focus: "следующий сценарий",   source: crm,     owner: [Продажи, Работа с клиентами],       norm_hours: 72, criterion: "следующий сценарий запущен в срок: предложение или рекламация"}
+
+# Детальные заказы (6.3): 100–200 штук. Объём в штуках изделий живёт только в дневных KPI.
+orders:
+  count: 200
+  customers: 90
+  days: 45                     # заказы созданы за последние N суток до «сейчас»…
+  future_days: 15              # …и ещё N суток вперёд: они появятся при перемотке времени
+  brands: [ФФ РФ, Фотопринт]
+  segments: [B2B, B2C]
+  product_lines: [Выпускные альбомы, Прослойка, Зернистые обложки, Образцы]
+  # Узлы — источники событий оплаты (finance) и смен (hr): первый существующий.
+  finance_owner: [Финансы, Продажи, Работа с клиентами]
+  hr_owner: [Смены, HR]
+  # Сегмент сценария «Брак»: в последние ramp_days суток часть его заказов
+  # получает брак на этапе 5 и обращение на этапе 7.
+  scenario:
+    dims: {product_line: Выпускные альбомы, brand: ФФ РФ, segment: B2B}
+    share: 0.4
+    defect_share: 0.7
+  background_defect_share: 0.03
+  ticket_share: 0.12
+
+# Внешние события, объясняющие скачки (6.2). Видны как флажки kind=annotation на
+# рядах затронутых KPI. Аннотация сценария «Брак» — в scenario_defect.yaml.
+annotations:
+  - {days_before_now: 206, source: crm,     label: "Старт сезона",
+     targets: [{node: Поддержка, kpi: sla_topics_share}, {node: Поддержка, kpi: tickets_inbound},
+               {node: Поддержка, kpi: wismo_share}]}
+  - {days_before_now: 60,  source: erp,     label: "Запуск новых продуктов: прослойка",
+     targets: [{node: Печать, kpi: site_load}, {node: Сборка, kpi: site_load}],
+     dims: {product_line: Прослойка}}
+  - {days_before_now: 40,  source: erp,     label: "Смена перевозчика: Boxberry → Яндекс Доставка",
+     targets: [{node: Склад и отгрузка, kpi: pay_to_carrier_time}, {node: Pick-Pack, kpi: delivery_on_time_share}]}
+  - {days_before_now: 30,  source: finance, label: "Откат оплаты: «только СБП»",
+     targets: [{node: Финансы, kpi: paid_orders_share}]}
+  - {days_before_now: 20,  source: crm,     label: "Акция «образцы −50%»",
+     targets: [{node: Продажи, kpi: orders_rhythm}, {node: Маркетинг, kpi: leads}],
+     dims: {product_line: Образцы}}

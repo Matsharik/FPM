@@ -1,0 +1,27 @@
+{
+  "login": "qc_otk",
+  "name": "Контролёр ОТК",
+  "role": "qc",
+  "scope_roots": [
+    {
+      "id": 12,
+      "name": "ОТК"
+    }
+  ],
+  "node": {
+    "id": 17,
+    "name": "Контролёр ОТК Иванова"
+  },
+  "permissions": [
+    "deviations.done",
+    "flags.write",
+    "points.write"
+  ],
+  "sees_everything": false,
+  "zone": [
+    12,
+    17,
+    18,
+    19
+  ]
+}

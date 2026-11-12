@@ -1,0 +1,198 @@
+{
+  "id": "DEV-0001",
+  "node_id": 5,
+  "node_name": "Поддержка",
+  "kpi": "defect_tickets_share",
+  "title": "Доля обращений по браку",
+  "status": "open",
+  "created_at": "2026-11-23T09:00:00+03:00",
+  "signal": {
+    "ts": "2026-11-23T09:00:00+03:00",
+    "day": "2026-11-22",
+    "value": 9,
+    "status": "red",
+    "level": "crit",
+    "threshold": 8,
+    "detected_by": "auto"
+  },
+  "context": {
+    "tile": "quality",
+    "stage": 7,
+    "season_profile": "default",
+    "dims": {
+      "product_line": "Выпускные альбомы",
+      "brand": "ФФ РФ"
+    },
+    "window": {
+      "from": "2026-11-16T00:00:00+03:00",
+      "to": "2026-11-23T00:00:00+03:00"
+    }
+  },
+  "cause": {
+    "trace": [
+      {
+        "depth": 0,
+        "node_id": 5,
+        "node_name": "Поддержка",
+        "node_type": "department",
+        "owner": "Зам. по работе с клиентами",
+        "visible": true,
+        "kpi": "defect_tickets_share",
+        "title": "Доля обращений по браку",
+        "status": "red",
+        "severity": 1,
+        "value": 9,
+        "value_date": "2026-11-22",
+        "unit": "%",
+        "via": null,
+        "chosen": {
+          "link_id": "L-0018",
+          "to_node": 11,
+          "to_node_name": "Сборка",
+          "owner": "Зам. по производству",
+          "to_kpi": "defect_rate",
+          "target_kpi": "defect_rate",
+          "weight": 0.6,
+          "access": "none",
+          "status": "red",
+          "visible": true,
+          "severity": 1,
+          "contribution": 0.6,
+          "share": 0.923077
+        },
+        "alternatives": [
+          {
+            "link_id": "L-0019",
+            "to_node": 12,
+            "to_node_name": "ОТК",
+            "owner": "Зам. по производству",
+            "to_kpi": "defect_escape_rate",
+            "target_kpi": "defect_escape_rate",
+            "weight": 0.25,
+            "access": "none",
+            "status": "green",
+            "visible": true,
+            "severity": 0.2,
+            "contribution": 0.05,
+            "share": 0.076923
+          }
+        ]
+      },
+      {
+        "depth": 1,
+        "node_id": 11,
+        "node_name": "Сборка",
+        "node_type": "department",
+        "owner": "Зам. по производству",
+        "visible": true,
+        "kpi": "defect_rate",
+        "title": "Доля брака",
+        "status": "red",
+        "severity": 1,
+        "value": 6.4,
+        "value_date": "2026-11-22",
+        "unit": "%",
+        "via": {
+          "link_id": "L-0018",
+          "to_node": 11,
+          "to_node_name": "Сборка",
+          "owner": "Зам. по производству",
+          "to_kpi": "defect_rate",
+          "target_kpi": "defect_rate",
+          "weight": 0.6,
+          "access": "none",
+          "status": "red",
+          "visible": true,
+          "severity": 1,
+          "contribution": 0.6,
+          "share": 0.923077
+        },
+        "chosen": null,
+        "alternatives": [
+          {
+            "link_id": "L-0025",
+            "to_node": 23,
+            "to_node_name": "Смены",
+            "owner": "HR",
+            "to_kpi": "shift_load",
+            "target_kpi": "shift_load",
+            "weight": 0.25,
+            "access": "none",
+            "status": "yellow",
+            "visible": true,
+            "severity": 0.48,
+            "contribution": 0.12,
+            "share": 1
+          }
+        ]
+      }
+    ],
+    "root": {
+      "node_id": 11,
+      "node_name": "Сборка",
+      "kpi": "defect_rate"
+    },
+    "stopped_reason": "below_threshold",
+    "hypothesis": "",
+    "confidence": "high",
+    "confidence_basis": {
+      "node_id": 12,
+      "kpi": "confirmed_defect_share",
+      "value": 73.05,
+      "status": "green"
+    },
+    "set_by": null
+  },
+  "action": {
+    "text": "",
+    "owner_login": null,
+    "owner_node": null,
+    "due_at": null,
+    "playbook_ref": null,
+    "assigned_at": null,
+    "assigned_by": null,
+    "first_assigned_at": null,
+    "done_at": null,
+    "done_by": null
+  },
+  "rechecks": [],
+  "resolution": null,
+  "affected_orders": {
+    "count": 8,
+    "sample": [
+      "ORD-000119",
+      "ORD-000121",
+      "ORD-000122",
+      "ORD-000130",
+      "ORD-000132",
+      "ORD-000134",
+      "ORD-000140",
+      "ORD-000142"
+    ],
+    "dims": {
+      "product_line": "Выпускные альбомы",
+      "brand": "ФФ РФ"
+    },
+    "stage": 7,
+    "window": {
+      "from": "2026-11-16T00:00:00+03:00",
+      "to": "2026-11-23T00:00:00+03:00"
+    }
+  },
+  "history": [
+    {
+      "ts": "2026-11-23T09:00:00+03:00",
+      "user": "system",
+      "change": "created",
+      "detected_by": "auto"
+    }
+  ],
+  "synthetic": true,
+  "overdue": false,
+  "current": {
+    "value": 9,
+    "value_date": "2026-11-22",
+    "status": "red",
+    "severity": 1
+  }
+}

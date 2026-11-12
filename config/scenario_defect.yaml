@@ -1,0 +1,57 @@
+# Демо-сценарий «Брак» (раздел 10.2 промпта). Цифры демонстрационные.
+#
+# За последние ramp_days суток «Сборка: доля брака» растёт до 6,4 % (crit 5),
+# «Поддержка: доля обращений по браку» краснеет, «Смены: нагрузка» — в жёлтой
+# зоне (не выше 115 %, иначе trace уйдёт в «Смены», см. D53), «ОТК: пропуск
+# брака» — норма (зелёная зона, но выше цели).
+#
+# Ветки будущего (раздел 5.4): no_action — проблема остаётся; with_action —
+# KPI улучшается за 5–7 суток после назначения действия по карточке сигнала.
+# with_action — значения по суткам начиная с суток назначения; дальше держится
+# последнее значение.
+
+signal: {node: Поддержка, kpi: defect_tickets_share}
+ramp_days: 10
+branch_days: 60
+
+annotation:
+  days_before_now: 12
+  kind: annotation
+  label: Запуск новой обложки
+  source: erp
+  # Каких заказов касается: из этих измерений карточка берёт context.dims.
+  dims: {product_line: Выпускные альбомы, brand: ФФ РФ}
+  targets:
+    - {node: Сборка, kpi: defect_rate}
+    - {node: Поддержка, kpi: defect_tickets_share}
+
+kpis:
+  - node: Поддержка
+    kpi: defect_tickets_share
+    ramp_to: 9.0
+    noise: 0.15
+    no_action: 9.0
+    with_action: [8.0, 6.4, 5.0, 4.2, 3.9, 3.8, 3.7]
+
+  - node: Сборка
+    kpi: defect_rate
+    ramp_to: 6.4
+    noise: 0.1
+    no_action: 6.4
+    with_action: [5.6, 4.4, 3.2, 2.4, 2.0, 1.9, 1.9]
+
+  # Норма (зелёная зона), но чуть выше цели: ОТК получает небольшую долю вклада.
+  - node: ОТК
+    kpi: defect_escape_rate
+    ramp_from: 0.5
+    ramp_to: 0.8
+    noise: 0.03
+    no_action: 0.8
+    with_action: [0.8, 0.7, 0.6, 0.55, 0.5]
+
+  - node: Смены
+    kpi: shift_load
+    ramp_to: 112
+    noise: 1.0
+    no_action: 112
+    with_action: [112, 110, 108, 106, 104, 103, 102]

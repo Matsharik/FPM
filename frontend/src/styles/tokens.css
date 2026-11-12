@@ -1,0 +1,77 @@
+/* Дизайн-токены «Фотопринт Manage». Цвет = смысл: статусы — цветом + значком + словом,
+   жёлтый — только главное действие и выбранный элемент (никогда текст и линии на светлом). */
+:root {
+  /* База */
+  --bg: #f4f4f5;
+  --surface: #ffffff;
+  --surface-2: #fafafa;
+  --ink: #0a0a0a;
+  --text: #1c1c1e;
+  --text-muted: #5f5f66; /* 5,9:1 на --bg (исходный #6E6E73 даёт 4,6:1 — на грани) */
+  --text-faint: #8a8a91; /* только для неважных подписей рядом с крупным текстом */
+  --border: #e4e4e7;
+  --border-strong: #d4d4d8;
+
+  /* Действие и фокус */
+  --accent: #ffe600;
+  --on-accent: #0a0a0a;
+  --accent-soft: #fff9c2;
+
+  /* Статусы: заливка / текст / фон */
+  --ok: #1e9e55;
+  --ok-ink: #0b6b39;
+  --ok-soft: #e7f6ee;
+  --warn: #ff8a00;
+  --warn-ink: #a85400;
+  --warn-soft: #fff1e0;
+  --crit: #e5383b;
+  --crit-ink: #b4232a;
+  --crit-soft: #fdecec;
+  --unknown: #a1a1aa;
+  --unknown-ink: #52525b;
+  --unknown-soft: #f1f1f3;
+
+  /* Влияние вверх (7.3) — отдельный стиль, не статусный */
+  --impact: #3b5bdb;
+  --impact-soft: #edf2ff;
+
+  --hatch: repeating-linear-gradient(135deg, var(--bg) 0 6px, var(--border) 6px 8px);
+
+  /* Типографика: 12 / 14 / 16 / 20 / 28 / 40 / 56 */
+  --font: 'Inter Variable', 'Inter', 'SF Pro Display', -apple-system, 'Segoe UI', system-ui, sans-serif;
+  --fs-12: 12px;
+  --fs-14: 14px;
+  --fs-16: 16px;
+  --fs-20: 20px;
+  --fs-28: 28px;
+  --fs-40: 40px;
+  --fs-56: 56px;
+  --track-tight: -0.02em;
+
+  /* Геометрия: сетка 8 px */
+  --r-card: 16px;
+  --r-chip: 10px;
+  --r-pill: 999px;
+  --s-1: 4px;
+  --s-2: 8px;
+  --s-3: 12px;
+  --s-4: 16px;
+  --s-5: 24px;
+  --s-6: 32px;
+  --s-7: 48px;
+  --shadow-1: 0 1px 2px rgba(10, 10, 10, 0.05);
+  --shadow-pop: 0 8px 28px rgba(10, 10, 10, 0.12);
+
+  --topbar-h: 64px;
+  --nav-w: 88px;
+  --inspector-w: 460px;
+
+  --ease: cubic-bezier(0.2, 0, 0, 1);
+  --dur: 220ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur: 0ms;
+  }
+}

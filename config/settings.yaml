@@ -1,0 +1,47 @@
+# Настройки демо-стенда «Фотопринт». Читаются при старте сервера.
+
+clock:
+  # Демо-«сейчас» сразу после сида: вход в новогодний пик.
+  default_now: "2026-11-23T09:00:00+03:00"
+  # Часовой пояс для суточной агрегации — фиксированное смещение (Минск).
+  utc_offset: "+03:00"
+
+# Месяцы, в которые действует профиль порогов `season` (остальные — `default`).
+season_months: [5, 6, 7, 12]
+
+# Р7: ТЗ запрещает абсолютные суммы. Включение режима money — только этот флаг.
+allow_money: false
+
+# Статус KPI: 1 — по последнему дневному значению, больше 1 — по среднему за окно.
+status_window_days: 1
+# KPI считается «без свежих данных», если последней точке больше стольких суток.
+stale_days: 3
+
+# Трассировка останавливается, когда вклад лучшей связи меньше этого значения.
+trace_min_contribution: 0.15
+
+# Перепроверка решения: наибольшая длина окна и минимальное падение severity для «passed».
+recheck_window_days: 7
+recheck_min_improvement: 0.5
+# Раньше стольких суток после точки отсчёта перепроверка отвечает «pending» и статус не меняет.
+recheck_min_days: 3
+
+forecast_lookback_days: 28
+
+# Р3: показывать ли серые узлы ниже границы зоны.
+show_downstream_boundary: true
+
+# Генератор синтетики.
+seed: 20261123
+history_days: 365
+
+# Главный экран: 8 плиток. priority — срок → качество → себестоимость.
+tiles:
+  - {key: clients,    title: "Клиенты · динамика",      stage: 2,    priority: other,   order: 7}
+  - {key: orders,     title: "Заказы · ритм",           stage: 3,    priority: time,    order: 1}
+  - {key: moderation, title: "Модерация · очередь",     stage: 4,    priority: time,    order: 2}
+  - {key: production, title: "Производство · загрузка", stage: 5,    priority: time,    order: 3}
+  - {key: quality,    title: "Качество",                stage: null, priority: quality, order: 5}
+  - {key: support,    title: "Поддержка · SLA",         stage: 7,    priority: quality, order: 6}
+  - {key: delivery,   title: "Доставка · статус",       stage: 6,    priority: time,    order: 4}
+  - {key: team,       title: "Команда · ресурс",        stage: null, priority: cost,    order: 8}
